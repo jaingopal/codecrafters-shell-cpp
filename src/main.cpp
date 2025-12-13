@@ -15,6 +15,7 @@ int main() {
   }
   if(input.substr(0,5)=="echo "){
     cout<<input.substr(5);
+    main();
   }
   cout<<input<<": command not found"<<endl;
   main();
