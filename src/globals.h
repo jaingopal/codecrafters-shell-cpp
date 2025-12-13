@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <filesystem>
+#include <cstdlib>
+#include <fstream>
 using namespace std;
 
 namespace fs = std::filesystem;

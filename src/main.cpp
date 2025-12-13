@@ -14,29 +14,35 @@ int main() {
 
   string input ;
   getline(cin,input);
-  vector<string>commands=split_by_spaces(input);
+  vector<string>commands;
+  string filename;
+
+  split_by_spaces(input,commands,filename);
+  if(filename.size()){
+    redirect(commands,filename);
+  }
   if(commands[0]=="exit"){
     return 0;
   }
   else if(commands[0]=="echo"){
-    echo(commands);
+    cout<<echo(commands);
     main();
   }
   else if(commands[0]=="type"){
-    type_main(commands);
+    cout<<type_main(commands);
     main();
   }
 
   else if(commands[0]=="pwd"){
-    pwd();
+    cout<<pwd();
     main();
   }
   else if(commands[0]=="cd"){
-    cd_main(commands);
+    cout<<cd_main(commands);
     main();
   }
   else{
-    ext(commands);
+    cout<<ext(commands);
     main();
   }
 

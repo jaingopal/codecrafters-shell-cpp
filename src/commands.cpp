@@ -3,17 +3,19 @@
 
 
 
-void echo(vector<string >& vec){
-  for(int i=1;i<vec.size();i++){
-    cout<<vec[i]<<" ";
-  }
-  cout<<endl;
-  return;
+string echo(vector<string >& vec){
+    string ans;
+    for(int i=1;i<vec.size();i++){
+        ans=ans+vec[i]+" ";
+    }
+    ans+="\n";
+    return ans;
 }
 
 
-void ext(vector<string>& commands){
+string ext(vector<string>& commands){
   get_execFiles();
+  string ans;
   string exec="";
   for(auto t:exec_folders){
     string folder=t;
@@ -23,24 +25,25 @@ void ext(vector<string>& commands){
     }
   }
   if(exec.size()){
-    run(exec,commands);
-    return ;
+    ans=run(exec,commands);
+    return ans;
   }
   else{
-    cout<<commands[0]<<": command not found"<<endl;
-    return ;
+    ans=commands[0]+": command not found"+"\n";
+    return ans;
   }
 }
 
 
 
-void pwd(){
-  if(!cwd.size()){
-    fs::path curr=fs::current_path();
-    cwd=curr;
-  }
-  cout<<cwd<<endl;
-  return;
+string pwd(){
+    string ans;
+    if(!cwd.size()){
+        fs::path curr=fs::current_path();
+        cwd=curr;
+    }
+    ans=cwd+"\n";
+    return ans;
 }
 
 void parent_dir(){
@@ -56,111 +59,109 @@ void parent_dir(){
 }
 
 
-void cd(const string& direc){
-  if(!direc.size()){
-    return;
-  }
-
-  if(direc[0]=='/'){
-    cwd='/';
-    string direct=direc.substr(1);
-    cd(direct);
-    return;
-  }
-
-  if(direc.size()>=2&&direc[0]=='.'&&direc[1]=='.'){
-    if(direc.size()==2){
-      parent_dir();
-      return;
+string cd(const string& direc){
+    string ans;
+    if(!direc.size()){
+        return "";
     }
-    if(direc[2]=='/'){
-      parent_dir();
-      for(int i=3;i<direc.size();i++){
-        if(direc[i]!='/'){
-          string direct=direc.substr(i);
-          cd(direct);
-          return;
+
+    if(direc[0]=='/'){
+        cwd='/';
+        string direct=direc.substr(1);
+        return cd(direct);
+        
+    }
+
+    if(direc.size()>=2&&direc[0]=='.'&&direc[1]=='.'){
+        if(direc.size()==2){
+            parent_dir();
+            return "";
         }
-      }
-      return;
-    }
-  }
-
-  if(direc[0]=='.'){
-    if(direc.size()==1){
-      return ;
-    }
-    if(direc[1]=='/'){
-      for(int i=2;i<direc.size();i++){
-        if(direc[i]!='/'){
-          string direct=direc.substr(i);
-          cd(direct);
-          return;
+        if(direc[2]=='/'){
+        parent_dir();
+        for(int i=3;i<direc.size();i++){
+            if(direc[i]!='/'){
+                string direct=direc.substr(i);
+                return cd(direct);
+            }
         }
-      }
-      return;
+        return "";
+        }
     }
-  }
-  
-  string temp;
-  for(int i=0;i<direc.size();i++){
-    if(direc[i]=='/'){
-      string new_cwd;
-      if(cwd[cwd.size()-1]=='/'){
+
+    if(direc[0]=='.'){
+        if(direc.size()==1){
+            return "";
+        }
+        if(direc[1]=='/'){
+            for(int i=2;i<direc.size();i++){
+                if(direc[i]!='/'){
+                string direct=direc.substr(i);
+                return cd(direct);
+                }
+            }
+            return "";
+        }
+    }
+    
+    string temp;
+    for(int i=0;i<direc.size();i++){
+        if(direc[i]=='/'){
+        string new_cwd;
+        if(cwd[cwd.size()-1]=='/'){
+            new_cwd=cwd+temp;
+        }
+        else{
+            new_cwd=cwd+'/'+temp;
+        }
+        fs::path directory=new_cwd;
+        if(!(fs::exists(directory))||!(fs::is_directory(directory))){
+            ans="cd: "+new_cwd+'/'+direc.substr(i)+": No such file or directory\n";
+            return ans;
+        }
+        cwd=new_cwd;
+        temp="";
+        while(i<direc.size()){
+            if(direc[i]!='/'){
+            string direct=direc.substr(i);
+            return cd(direct);
+            }
+            i++;
+        }
+        return "";
+        }
+        else{
+            temp.push_back(direc[i]);
+        }
+    }
+    
+    string new_cwd;
+    if(cwd[cwd.size()-1]=='/'){
         new_cwd=cwd+temp;
-      }
-      else{
+    }
+    else{
         new_cwd=cwd+'/'+temp;
-      }
-      fs::path directory=new_cwd;
-      if(!(fs::exists(directory))||!(fs::is_directory(directory))){
-        cout<<"cd: "<<new_cwd+'/'+direc.substr(i)<<": No such file or directory"<<endl;
-        return;
-      }
-      cwd=new_cwd;
-      temp="";
-      while(i<direc.size()){
-        if(direc[i]!='/'){
-          string direct=direc.substr(i);
-          cd(direct);
-          return;
-        }
-        i++;
-      }
-      return;
     }
-    else{
-      temp.push_back(direc[i]);
-    }
-  }
-  
-  string new_cwd;
-  if(cwd[cwd.size()-1]=='/'){
-    new_cwd=cwd+temp;
-  }
-  else{
-    new_cwd=cwd+'/'+temp;
-  }
 
-  fs::path directory=new_cwd;
-  if(fs::exists(directory)){
-    if(fs::is_directory(directory)){
-      cwd=new_cwd;
-      return;
+    fs::path directory=new_cwd;
+    if(fs::exists(directory)){
+        if(fs::is_directory(directory)){
+            cwd=new_cwd;
+            return "";
+        } 
+        else{
+            ans="cd: "+new_cwd+": not a directory\n";
+            return ans;
+        }
     }
     else{
-      cout<<"cd: "<<new_cwd<<": not a directory"<<endl;
-      return;
+        ans="cd: "+new_cwd+": No such file or directory\n";
+        return ans;
     }
-  }
-  else{
-    cout<<"cd: "<<new_cwd<<": No such file or directory"<<endl;
-    return;
-  }
 
 }
 
-void cd_main(vector<string>& commands){
+string cd_main(vector<string>& commands){
   if(cwd==""){
     fs::path curr=fs::current_path();
     cwd=curr;
@@ -168,57 +169,53 @@ void cd_main(vector<string>& commands){
   string HOME=getenv("HOME");
   if(commands.size()==1){
     cwd=HOME;
-    return;
+    return "";
   }
   if(commands[1][0]=='~'){
     if(commands[1]=="~"){
       cwd=HOME;
-      return;
+      return "";
     }
     else{
       if(commands[1][2]=='/'){
         string str=commands[1].substr(2);
         cwd=HOME;
-        cd(str);
-        return;
+        return cd(str);
       }
     }
   }
-  cd(commands[1]);
-  return;
+  return cd(commands[1]);
 }
 
-void type(string& command){
+string type(string& command){
   for(auto& s:builtin){
     if(s==command){
-      cout<<command<<" is a shell builtin"<<endl;
-      return;
+        return command+" is a shell builtin\n";
     }
   }
   if(!command.size()){
-    invalid_type(command);
-    return;
+    return "";
   }
   get_execFiles();
   for(auto t:exec_folders){
     string folder=t;
     string ret=check_type(command,folder);
     if(ret.size()){
-      cout<<command<<" is "<<ret<<endl;
-      return;
+      return command+" is "+ret+"\n";
     }
   }
 
-  invalid_type(command);
-  return;
+  return invalid_type(command);
 
 }
 
-void type_main(vector<string>& commands){
+string type_main(vector<string>& commands){
   if(commands.size()==1){
-    return;
+    return "";
   }
+  string ans;
   for(int i=1;i<commands.size();i++){
-    type(commands[i]);
+    ans=ans+type(commands[i]);
   }
+  return ans;
 }

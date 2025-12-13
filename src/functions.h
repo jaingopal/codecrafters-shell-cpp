@@ -2,8 +2,10 @@
 
 
 bool is_exec(string & path);
-void run(string& path,const vector<string>& commands);
+string run(string& path,const vector<string>& commands);
 void get_execFiles();
-void invalid_type(string& command);
+string invalid_type(string& command);
 string check_type(string& command,string& folder);
-vector<string> split_by_spaces(const string& str);
+void split_by_spaces(const string& str,vector<string>& word,string& filename);
+void redirect(vector<string>& commands,string& filename);
+int main();

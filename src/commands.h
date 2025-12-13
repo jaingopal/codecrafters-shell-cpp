@@ -1,10 +1,10 @@
 #include "globals.h"
 
-void ext(vector<string>& commands);
-void pwd();
+string ext(vector<string>& commands);
+string pwd();
 void parent_dir();
-void cd(const string& direc);
-void cd_main(vector<string>& commands);
-void type(string& command);
-void type_main(vector<string>& commands);
-void echo(vector<string>& str);
+string cd(const string& direc);
+string cd_main(vector<string>& commands);
+string type(string& command);
+string type_main(vector<string>& commands);
+string echo(vector<string>& str);

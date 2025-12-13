@@ -1,24 +1,42 @@
 #include "functions.h"
+#include "commands.h"
 
 bool is_exec(string & path){
   const char * t=path.c_str();
   return access(t, X_OK)==0;
 }
 
-void run(string& path,const vector<string>& commands){
-  pid_t pid = fork();
-  vector<char* >argv;
-  for(const auto & s:commands){
-    argv.push_back(const_cast<char*>(s.c_str()));
-  }
-  argv.push_back(nullptr);
-  if(pid==0){
-    execvp(path.c_str(),argv.data());
-  }
-  else{
+//uppdate this run by piping 
+
+string run(string& path,const vector<string>& commands){
+    int pipefd[2];
+    pipe(pipefd);
+    pid_t pid = fork();
+    if(pid==0){
+        dup2(pipefd[1], STDOUT_FILENO);
+        close(pipefd[0]);
+        close(pipefd[1]);
+        vector<char* >argv;
+        for(const auto & s:commands){
+          argv.push_back(const_cast<char*>(s.c_str()));
+        }
+        argv.push_back(nullptr);
+        execvp(path.c_str(),argv.data());
+    }
+    
+    close(pipefd[1]);
+
+    string output;
+    char buf[256];
+    ssize_t n;
+
+    while ((n = read(pipefd[0], buf, sizeof(buf))) > 0) {
+        output.append(buf, n);
+    }
+
+    close(pipefd[0]);
     wait(nullptr);
-  }
-  return ;
+    return output;
 
 }
 
@@ -49,9 +67,8 @@ void get_execFiles(){
 }
 
 
-void invalid_type(string& command){
-  cout<<command<<": not found"<<endl;
-  return;
+string invalid_type(string& command){
+    return command+": not found\n";
 }
 
 string check_type(string& command,string& folder){
@@ -68,11 +85,10 @@ string check_type(string& command,string& folder){
 
 
 
-vector<string> split_by_spaces(const string& str){
+void split_by_spaces(const string& str,vector<string>& words,string& filename){
     bool singleq=false;
     bool doubleq=false;
     string word;
-    vector<string> words;
     for(int i=0;i<str.size();i++){
         char ch=str[i];
         if((doubleq&&ch!='\"')||(singleq&&ch!='\'')){
@@ -89,6 +105,19 @@ vector<string> split_by_spaces(const string& str){
         if(ch=='\\'){
             word.push_back(str[i+1]);
             i++;
+            continue;
+        }
+        if(ch=='>'){
+            if(word.size()){
+                if(word[word.size()-1]=='1'){
+                    word.pop_back();
+                }
+            }
+            if(word.size()){
+                words.push_back(word);
+                word="";
+            }
+            words.push_back(">");
             continue;
         }
         if(!doubleq&&!singleq){
@@ -116,5 +145,56 @@ vector<string> split_by_spaces(const string& str){
     if(word.size()){
         words.push_back(word);
     }
-  return words;
+    vector<string> temp;
+    for(int i=0;i<words.size();i++){
+
+        if(words[i]==">"){
+
+            filename=words[i+1];
+            i++;
+        }
+        else{
+            temp.push_back(words[i]);
+
+        }
+    }
+    words=temp;
+}
+
+void redirect(vector<string>& commands,string& filename){
+    ofstream file(filename,ios::out|ios::trunc);
+    if(!file.is_open()){
+        cout<<"NOT OPENING "<<endl;
+        return;
+    }
+    if(commands[0]=="exit"){
+        file.flush();
+        exit(0);
+    }
+    else if(commands[0]=="echo"){
+        file<<echo(commands);
+        file.flush();
+        main();
+    }
+    else if(commands[0]=="type"){
+        file<<type_main(commands);
+        file.flush();
+        main();
+    }
+
+    else if(commands[0]=="pwd"){
+        file<<pwd();
+        file.flush();
+        main();
+    }
+    else if(commands[0]=="cd"){
+        file<<cd_main(commands);
+        file.flush();
+        main();
+    }
+    else{
+        file<<ext(commands);
+        file.flush();
+        main();
+    }
 }
