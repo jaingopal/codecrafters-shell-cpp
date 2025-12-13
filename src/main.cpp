@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <vector>
 #include <unistd.h>
 #include <filesystem>
@@ -13,6 +14,18 @@ vector<string>builtin={"type","exit","echo"};
 bool is_exec(string & path){
   const char * t=path.c_str();
   return access(t, X_OK)==0;
+}
+
+void run(string& path,const vector<string>& commands){
+
+  vector<char* >argv;
+  argv.push_back(const_cast<char*>(path.c_str()));
+  for(const auto & s:commands){
+    argv.push_back(const_cast<char*>(s.c_str()));
+  }
+  argv.push_back(nullptr);
+  execvp(argv[0],argv.data());
+
 }
 
 //For regenerating the executable files from the PATH variable
@@ -51,7 +64,7 @@ void invalid_type(string& command){
   return;
 }
 
-bool check_type(string& command,string& folder){
+string check_type(string& command,string& folder){
   for(const auto& entry:fs::directory_iterator(folder)){
     string s=entry.path().string();
     if(is_exec(s)){
@@ -59,22 +72,19 @@ bool check_type(string& command,string& folder){
         continue;
       }
       if(s==command){
-        cout<<command<<" is "<<s<<endl;
-        return true;
+        return s;
       }
       if(s.substr(s.size()-command.size())==command){
         if(s[s.size()-command.size()-1]=='/'){
-          cout<<command<<" is "<<s <<endl;
-          return true;
+          return s;   
         }
       }
     }
   }
-  return false;
+  return "";
 }
 
-void type(string& str){
-  string command=str.substr(5);
+void type(string& command){
   for(auto& s:builtin){
     if(s==command){
       cout<<command<<" is a shell builtin"<<endl;
@@ -88,16 +98,56 @@ void type(string& str){
   get_execFiles();
   for(auto t:exec_folders){
     string folder=t;
-
-    if(check_type(command,folder)){
+    string ret=check_type(command,folder);
+    if(ret.size()){
+      cout<<command<<" is "<<ret<<endl;
       return;
     }
-
   }
 
   invalid_type(command);
   return;
 
+}
+
+void type_main(vector<string>& commands){
+  if(commands.size()==1){
+    return;
+  }
+  for(int i=1;i<commands.size();i++){
+    type(commands[i]);
+  }
+}
+
+vector<string> split_by_spaces(const string& str){
+  istringstream iss(str);
+  vector<string>words;
+  string word;
+  while(iss >> word){
+    words.push_back(word);
+  }
+  return words;
+}
+
+void ext(vector<string>& commands){
+  get_execFiles();
+  string exec="";
+  for(auto t:exec_folders){
+    string folder=t;
+    exec=check_type(commands[0],folder);
+    if(exec.size()){
+      break;
+    }
+  }
+  vector<string>args(commands.begin()+1,commands.end());
+  if(exec.size()){
+    run(exec,args);
+    return ;
+  }
+  else{
+    cout<<commands[0]<<": command not found"<<endl;
+    return ;
+  }
 }
 
 int main() {
@@ -109,19 +159,20 @@ int main() {
 
   string input ;
   getline(cin,input);
-  if(input=="exit"){
+  vector<string>commands=split_by_spaces(input);
+  if(commands[0]=="exit"){
     return 0;
   }
-  if(input.substr(0,5)=="echo "){
+  if(commands[0]=="input"){
     echo(input);
     main();
   }
-  if(input.substr(0,5)=="type "){
-    type(input);
+  if(commands[0]=="type"){
+    type_main(commands);
     main();
   }
 
-  cout<<input<<": command not found"<<endl;
+  ext(commands);
   main();
 
 }
