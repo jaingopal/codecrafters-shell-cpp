@@ -75,6 +75,11 @@ vector<string> split_by_spaces(const string& str){
     vector<string> words;
     for(int i=0;i<str.size();i++){
         char ch=str[i];
+        if(ch=='\\'){
+            word.push_back(str[i+1]);
+            i++;
+            continue;
+        }
         if((doubleq&&ch!='\"')||(singleq&&ch!='\'')){
             word.push_back(ch);
             continue;
@@ -104,9 +109,5 @@ vector<string> split_by_spaces(const string& str){
     if(word.size()){
         words.push_back(word);
     }
-    // for(auto word:words){
-    //     cout<<word<<" ";
-    // }
-    // cout<<endl;
   return words;
 }
