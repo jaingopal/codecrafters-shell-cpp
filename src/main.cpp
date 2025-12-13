@@ -19,12 +19,12 @@ bool is_exec(string & path){
 void run(string& path,const vector<string>& commands){
 
   vector<char* >argv;
-  argv.push_back(const_cast<char*>(path.c_str()));
+  // argv.push_back(const_cast<char*>(path.c_str()));
   for(const auto & s:commands){
     argv.push_back(const_cast<char*>(s.c_str()));
   }
   argv.push_back(nullptr);
-  execvp(argv[0],argv.data());
+  execvp(path.c_str(),argv.data());
 
 }
 
@@ -139,9 +139,9 @@ void ext(vector<string>& commands){
       break;
     }
   }
-  vector<string>args(commands.begin()+1,commands.end());
+  // vector<string>args(commands.begin()+1,commands.end());
   if(exec.size()){
-    run(exec,args);
+    run(exec,commands);
     return ;
   }
   else{
