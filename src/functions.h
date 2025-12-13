@@ -1,7 +1,4 @@
-#ifndef GL_H
-    #define GLH
-    #include "globals.h"
-#endif
+#include "globals.h"
 
 
 bool is_exec(string & path);

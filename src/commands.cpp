@@ -1,11 +1,5 @@
-#ifndef FN_H
-    #define FN_H
-    #include "functions.h"
-#endif
-#ifndef GL_H
-    #define GLH
-    #include "globals.h"
-#endif
+#include "functions.h"
+#include "globals.h"
 
 
 cwd="";

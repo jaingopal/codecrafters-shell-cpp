@@ -1,12 +1,5 @@
-#ifndef FN_H
-    #define FN_H
-    #include "functions.h"
-#endif
-#ifndef CM_H
-  #define CM_H
-  #include "commands.h"
-#endif
-
+#include "functions.h"
+#include "commands.h"
 
 
 int main() {

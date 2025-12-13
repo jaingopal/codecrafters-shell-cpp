@@ -1,8 +1,4 @@
-#ifndef GL_H
-    #define GLH
-    #include "globals.h"
-#endif
-
+#include "globals.h"
 
 void ext(vector<string>& commands);
 void pwd();

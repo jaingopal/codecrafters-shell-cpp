@@ -1,3 +1,6 @@
+#ifndef GLOBALS_H
+#define GLOBALS_H
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -12,3 +15,6 @@ namespace fs = std::filesystem;
 string cwd;
 vector<fs::path> exec_folders;
 vector<string>builtin;
+
+#endif
+
