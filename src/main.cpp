@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <unistd.h>
+#include <sys/wait.h>
 #include <filesystem>
 using namespace std;
 
