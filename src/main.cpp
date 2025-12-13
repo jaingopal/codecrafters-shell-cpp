@@ -6,7 +6,7 @@ vector<string>builtin={"type","exit","echo","pwd"};
 vector<fs::path> exec_folders={};
 
 int main() {
-  init();
+
   cout << unitbuf;
   cerr << unitbuf;
 
