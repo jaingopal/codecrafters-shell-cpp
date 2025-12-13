@@ -69,49 +69,37 @@ string check_type(string& command,string& folder){
 
 
 vector<string> split_by_spaces(const string& str){
-    bool open=false;
+    bool singleq=false;
+    bool doubleq=false;
     string word;
     vector<string> words;
     for(int i=0;i<str.size();i++){
         char ch=str[i];
-        if(ch==' '){
-            if(open){
-                word.push_back(ch);
+        if((doubleq&&ch!='\"')||(singleq&&ch!='\'')){
+            word.push_back(ch);
+            continue;
+        }
+        if(!doubleq&&!singleq){
+            if(ch=='\''){
+                singleq=true;
+                continue;
             }
-            else{
+            if(ch=='\"'){
+                doubleq=true;
+                continue;
+            }
+            if(ch==' '){
                 if(word.size()){
                     words.push_back(word);
                     word="";
                 }
             }
-        }
-        else if(ch=='\''){
-            if(open){
-                if(i<str.size()-1&&str[i+1]!=' '){
-                    if(str[i+1]=='\''){
-                        i++;
-                    }
-                    else{
-                        open=false;
-                    }
-                    continue;
-                }
-                else{
-                    if(word.size()){
-                        words.push_back(word);
-                    }
-                    word="";
-                    open=false;
-                }
-            }
             else{
-                //it was not open yet 
-                open=true;
+                words.push_back(word);
             }
+            continue;
         }
-        else{
-            word.push_back(ch);
-        }
+        singleq=doubleq=false;
     }
     if(word.size()){
         words.push_back(word);
