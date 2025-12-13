@@ -1,4 +1,9 @@
 #include "functions.h"
+#ifndef GL_H
+    #define GLH
+    #include "globals.h"
+#endif
+
 
 cwd="";
 builtin={"type","exit","echo","pwd"};
