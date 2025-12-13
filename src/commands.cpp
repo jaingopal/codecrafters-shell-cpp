@@ -35,6 +35,7 @@ void echo(string& str){
         space=false;
     }
   }
+  cout<<endl;
   return;
 }
 
