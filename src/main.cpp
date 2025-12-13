@@ -196,10 +196,10 @@ void cd(vector<string>& commands){
     }
   }
   else if(direc[0]=='.'){
-    direc=cwd+'/'+direc.substr(1);
+    direc=cwd+direc.substr(1);
   }
   else if(direc[0]=='~'){
-    direc=HOME+'/'+direc.substr(1);
+    direc=HOME+direc.substr(1);
   }
   else if(direc[0]!='/'){
     direc=cwd+'/'+direc;
