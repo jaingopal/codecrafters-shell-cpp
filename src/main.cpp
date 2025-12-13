@@ -19,7 +19,7 @@ int main() {
     return 0;
   }
   else if(commands[0]=="echo"){
-    echo(input);
+    echo(commands);
     main();
   }
   else if(commands[0]=="type"){

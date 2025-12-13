@@ -69,11 +69,44 @@ string check_type(string& command,string& folder){
 
 
 vector<string> split_by_spaces(const string& str){
-  istringstream iss(str);
-  vector<string>words;
+  bool open=false;
   string word;
-  while(iss >> word){
-    words.push_back(word);
+  vector<string> words;
+  for(int i=0;i<str.size();i++){
+    char ch=str[i];
+    if(ch==' '){
+        if(open){
+            word.push_back(ch);
+        }
+        else{
+            if(word.size()){
+                words.push_back(word);
+                word="";
+            }
+        }
+    }
+    if(ch=='\''){
+        if(open){
+            if(i<str.size()-1&&str[i+1]=='\''){
+                continue;
+            }
+            else{
+                words.push_back(word);
+                word="";
+                open=false;
+            }
+        }
+        else{
+            if(word.size()){
+                words.push_back(word);
+                word="";
+                open=true;
+            }
+        }
+    }
+    if(word.size()){
+        words.push_back(word);
+    }
   }
   return words;
 }

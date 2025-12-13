@@ -3,44 +3,9 @@
 
 
 
-void echo(string& str){
-  bool space=false;
-  bool open=false;
-  str=str.substr(5);
-  bool start=true;
-  for(auto ch:str){
-    if(ch==' '){
-        if(start){
-            continue;
-        }
-        if(open){
-            cout<<ch;
-        }
-        else{
-            space=true;
-        }
-    }
-    else if(ch=='\''){
-        start=false;
-        if(open){
-            open=false;
-        }
-        else{
-            if(space){
-                cout<<' ';
-            }
-            space=false;
-            open=true;
-        }
-    }
-    else{
-        start=false;
-        if(space){
-            cout<<' ';
-        }
-        cout<<ch;
-        space=false;
-    }
+void echo(vector<string >& vec){
+  for(int i=1;i<vec.size();i++){
+    cout<<vec[i]<<" ";
   }
   cout<<endl;
   return;
