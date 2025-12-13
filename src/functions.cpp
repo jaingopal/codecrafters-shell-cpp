@@ -75,13 +75,13 @@ vector<string> split_by_spaces(const string& str){
     vector<string> words;
     for(int i=0;i<str.size();i++){
         char ch=str[i];
-        if((doubleq&&ch!='\"')||(singleq&&ch!='\'')){
-            word.push_back(ch);
-            continue;
-        }
-        if(ch=='\\'){
+        if(ch=='\\'&&!singleq){
             word.push_back(str[i+1]);
             i++;
+            continue;
+        }
+        if((doubleq&&ch!='\"')||(singleq&&ch!='\'')){
+            word.push_back(ch);
             continue;
         }
         if(!doubleq&&!singleq){
