@@ -13,6 +13,9 @@ int main() {
   if(input=="exit"){
     return 0;
   }
+  if(input.substr(0,5)=="echo "){
+    cout<<input.substr(5);
+  }
   cout<<input<<": command not found"<<endl;
   main();
 
