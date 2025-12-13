@@ -161,14 +161,41 @@ void pwd(){
 }
 
 void cd(vector<string>& commands){
+  if(cwd==""){
+    fs::path curr=fs::current_path();
+    cwd=curr;
+  }
   string HOME=getenv("HOME");
   if(commands.size()==1){
     cwd=HOME;
     return;
   }
   string direc=commands[1];
-  
-  if(direc[0]=='.'){
+
+  if(direc.size()>=2&&direc[0]=='.'&&direc[1]=='.'){
+    if(cwd=="/"){
+      if(direc.size()==2){
+        return ;
+      }
+      direc=direc.substr(2);
+    }
+    else{
+      int j=-1;
+      for(int i=cwd.size()-1;i>=0;i--){
+        if(cwd[i]=='/'){
+          j=i;
+          break;
+        }
+      }
+      if(j==0){
+        direc=direc.substr(2);
+      }
+      else{
+        direc=cwd.substr(0,j)+direc.substr(2);
+      }
+    }
+  }
+  else if(direc[0]=='.'){
     direc=cwd+'/'+direc.substr(1);
   }
   else if(direc[0]=='~'){
@@ -181,6 +208,11 @@ void cd(vector<string>& commands){
   if(fs::exists(directory)){
     if(fs::is_directory(directory)){
       cwd=direc;
+      if(cwd.size()>1){
+        if(cwd[cwd.size()-1]=='/'){
+          cwd.pop_back();
+        }
+      }
       return;
     }
     else{
