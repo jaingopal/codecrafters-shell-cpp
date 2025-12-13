@@ -7,6 +7,9 @@
 #include <filesystem>
 using namespace std;
 
+
+string cwd;
+vector<string> exec_folders
 namespace fs = std::filesystem;
 bool is_exec(string & path);
 void run(string& path,const vector<string>& commands);
