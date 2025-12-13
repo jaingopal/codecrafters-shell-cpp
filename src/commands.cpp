@@ -30,8 +30,8 @@ void echo(string& str){
     else{
         if(space){
             cout<<' ';
-            cout<<ch;
         }
+        cout<<ch;
         space=false;
     }
   }
