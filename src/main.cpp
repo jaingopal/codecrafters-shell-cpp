@@ -10,7 +10,7 @@ using namespace std;
 namespace fs = std::filesystem;
 
 vector<fs::path> exec_folders;
-vector<string>builtin={"type","exit","echo"};
+vector<string>builtin={"type","exit","echo","pwd"};
 
 bool is_exec(string & path){
   const char * t=path.c_str();
@@ -75,16 +75,8 @@ string check_type(string& command,string& folder){
   for(const auto& entry:fs::directory_iterator(folder)){
     string s=entry.path().string();
     if(is_exec(s)){
-      if(s.size()<command.size()){
-        continue;
-      }
-      if(s==command){
+      if(entry.path().filename()==command){
         return s;
-      }
-      if(s.substr(s.size()-command.size())==command){
-        if(s[s.size()-command.size()-1]=='/'){
-          return s;   
-        }
       }
     }
   }
@@ -157,6 +149,13 @@ void ext(vector<string>& commands){
   }
 }
 
+void pwd(){
+  fs::path curr=fs::current_path();
+  string str=curr;
+  cout<<str<<endl;
+  return;
+}
+
 int main() {
 
   cout << unitbuf;
@@ -170,16 +169,22 @@ int main() {
   if(commands[0]=="exit"){
     return 0;
   }
-  if(commands[0]=="input"){
+  else if(commands[0]=="echo"){
     echo(input);
     main();
   }
-  if(commands[0]=="type"){
+  else if(commands[0]=="type"){
     type_main(commands);
     main();
   }
 
-  ext(commands);
-  main();
+  else if(commands[0]=="pwd"){
+    pwd();
+    main();
+  }
+  else{
+    ext(commands);
+    main();
+  }
 
 }
