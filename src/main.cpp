@@ -1,11 +1,96 @@
 #include <iostream>
 #include <string>
+#include <vector>
+#include <unistd.h>
+#include <filesystem>
 using namespace std;
 
+namespace fs = std::filesystem;
+
+vector<fs::path> exec_files;
+vector<string>builtin={"type","exit","echo"};
+
+bool if_exec(string & path){
+  const char * t=path.c_str();
+  return access(t, X_OK)==0;
+}
+
+//For regenerating the executable files from the PATH variable
+void get_execFiles(){
+  string str=fs::path(getenv("PATH"));
+  string temp;
+  exec_files={};
+  for(auto ch:str){
+    if(ch==':'){
+      if(temp.size()){
+        if(fs::exists(temp)&&if_exec(temp)){
+          exec_files.push_back(temp);
+        }
+        temp="";
+      }
+    }
+    else{
+      temp.push_back(ch);
+    }
+  }
+  if(temp.size()){
+    if(fs::exists(temp)&&if_exec(temp)){
+      exec_files.push_back(temp);
+    }
+  }
+  return ;
+}
+
+void echo(string& str){
+  cout<<str.substr(5)<<endl;
+  return;
+}
+
+void invalid_type(string& command){
+  cout<<command<<" is a shell builtin"<<endl;
+  return;
+}
+
+void type(string& str){
+  string command=str.substr(5);
+  for(auto str:builtin){
+    if(str==command){
+      cout<<command<<" is a shell builtin"<<endl;
+      return;
+    }
+  }
+  if(!command.size()){
+    invalid_type(command);
+    return;
+  }
+  get_execFiles();
+  for(string&  s:exec_files){
+    if(s.size()<command.size()){
+      continue;
+    }
+    if(s==command){
+      cout<<command<<" is "<<s<<endl;
+      return ;
+    }
+    if(s.substr(s.size()-command.size())==command){
+      if(s[s.size()-command.size()-1]=='/'){
+        cout<<command<<" is "<<s <<endl;
+        return;
+      }
+    }
+
+  }
+
+  invalid_type(command);
+  return;
+
+}
+
 int main() {
-  // Flush after every std::cout / std:cerr
+
   cout << unitbuf;
   cerr << unitbuf;
+
   cout<<"$ ";
 
   string input ;
@@ -14,22 +99,17 @@ int main() {
     return 0;
   }
   if(input.substr(0,5)=="echo "){
-    cout<<input.substr(5)<<endl;
+    echo(input);
     main();
   }
   if(input.substr(0,5)=="type "){
-    string command=input.substr(5);
-    if(command=="type"||command=="exit"||command=="echo"){
-      cout<<command<<" is a shell builtin"<<endl;
-    }
-    else{
-      cout<<command<<": not found"<<endl;
-    }
+    type(input);
     main();
   }
+
   cout<<input<<": command not found"<<endl;
   main();
 
-  // TODO: Uncomment the code below to pass the first stage
+
 
 }
