@@ -11,7 +11,8 @@ int main() {
   string input ;
   getline(cin,input);
   cout<<input<<": command not found"<<endl;
+  main();
 
   // TODO: Uncomment the code below to pass the first stage
-  std::cout << "$ ";
+
 }
