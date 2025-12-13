@@ -47,14 +47,14 @@ void echo(string& str){
 }
 
 void invalid_type(string& command){
-  cout<<command<<" is a shell builtin"<<endl;
+  cout<<command<<": not found"<<endl;
   return;
 }
 
 void type(string& str){
   string command=str.substr(5);
-  for(auto str:builtin){
-    if(str==command){
+  for(auto& s:builtin){
+    if(s==command){
       cout<<command<<" is a shell builtin"<<endl;
       return;
     }
@@ -64,7 +64,8 @@ void type(string& str){
     return;
   }
   get_execFiles();
-  for(string&  s:exec_files){
+  for(auto t:exec_files){
+    string s=t;
     if(s.size()<command.size()){
       continue;
     }
@@ -109,7 +110,5 @@ int main() {
 
   cout<<input<<": command not found"<<endl;
   main();
-
-
 
 }
