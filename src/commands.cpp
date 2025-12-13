@@ -3,8 +3,6 @@
 
 
 
-
-
 void echo(string& str){
   cout<<str.substr(5)<<endl;
   return;
