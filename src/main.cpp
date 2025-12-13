@@ -22,7 +22,6 @@ bool is_exec(string & path){
 void run(string& path,const vector<string>& commands){
   pid_t pid = fork();
   vector<char* >argv;
-  // argv.push_back(const_cast<char*>(path.c_str()));
   for(const auto & s:commands){
     argv.push_back(const_cast<char*>(s.c_str()));
   }
@@ -140,7 +139,6 @@ void ext(vector<string>& commands){
       break;
     }
   }
-  // vector<string>args(commands.begin()+1,commands.end());
   if(exec.size()){
     run(exec,commands);
     return ;
@@ -173,7 +171,6 @@ void parent_dir(){
 }
 
 void cd(const string& direc){
-
   if(!direc.size()){
     return;
   }
@@ -231,7 +228,7 @@ void cd(const string& direc){
       }
       fs::path directory=new_cwd;
       if(!(fs::exists(directory))||!(fs::is_directory(directory))){
-        cout<<"cd: "<<cwd+direc<<": No such file or directory"<<endl;
+        cout<<"cd: "<<new_cwd+'/'+direc.substr(i)<<": No such file or directory"<<endl;
         return;
       }
       cwd=new_cwd;
@@ -242,6 +239,7 @@ void cd(const string& direc){
           cd(direct);
           return;
         }
+        i++;
       }
       return;
     }
