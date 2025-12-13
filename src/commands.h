@@ -1,4 +1,4 @@
-
+#include "globals.h"
 void ext(vector<string>& commands);
 void pwd();
 void parent_dir();
