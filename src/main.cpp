@@ -160,7 +160,123 @@ void pwd(){
   return;
 }
 
-void cd(vector<string>& commands){
+void parent_dir(){
+  if(cwd=="/"){
+    return;
+  }
+  for(int i=cwd.size()-1;i>=2;i--){
+    if(cwd[i]=='/'){
+      cwd=cwd.substr(0,i);
+      return;
+    }
+  }
+}
+
+void cd(const string& direc){
+  
+  if(!direc.size()){
+    return;
+  }
+
+  if(direc[0]=='/'){
+    cwd='/';
+    string direct=direct.substr(1);
+    cd(direct);
+    return;
+  }
+
+  if(direc.size()>=2&&direc[0]=='.'&&direc[1]=='.'){
+    if(direc.size()==2){
+      parent_dir();
+      return;
+    }
+    if(direc[2]=='/'){
+      parent_dir();
+      for(int i=3;i<direc.size();i++){
+        if(direc[i]!='/'){
+          string direct=direc.substr(i);
+          cd(direct);
+          return;
+        }
+      }
+      return;
+    }
+  }
+
+  if(direc[0]=='.'){
+    if(direc.size()==1){
+      return ;
+    }
+    if(direc[1]=='/'){
+      for(int i=2;i<direc.size();i++){
+        if(direc[i]!='/'){
+          string direct=direc.substr(i);
+          cd(direct);
+          return;
+        }
+      }
+      return;
+    }
+  }
+  
+  string temp;
+  for(int i=0;i<direc.size();i++){
+    if(direc[i]=='/'){
+      string new_cwd;
+      if(cwd[cwd.size()-1]=='/'){
+        new_cwd=cwd+temp;
+      }
+      else{
+        new_cwd=cwd+'/'+temp;
+      }
+      fs::path directory=new_cwd;
+      if(!(fs::exists(directory))||!(fs::is_directory(directory))){
+        cout<<"cd: "<<cwd+direc<<": No such file or directory"<<endl;
+        return;
+      }
+      cwd=new_cwd;
+      temp="";
+      while(i<direc.size()){
+        if(direc[i]!='/'){
+          string direct=direc.substr(i);
+          cd(direct);
+          return;
+        }
+      }
+      return;
+    }
+    else{
+      temp.push_back(direc[i]);
+    }
+  }
+  
+  string new_cwd;
+  if(cwd[cwd.size()-1]=='/'){
+    new_cwd=cwd+temp;
+  }
+  else{
+    new_cwd=cwd+'/'+temp;
+  }
+
+  fs::path directory=new_cwd;
+  if(fs::exists(directory)){
+    if(fs::is_directory(directory)){
+      cwd=new_cwd;
+      return;
+    }
+    else{
+      cout<<"cd: "<<new_cwd<<": not a directory"<<endl;
+      return;
+    }
+  }
+  else{
+    cout<<"cd: "<<new_cwd<<" : No such file or directory"<<endl;
+    return;
+  }
+
+}
+
+void cd_main(vector<string>& commands){
   if(cwd==""){
     fs::path curr=fs::current_path();
     cwd=curr;
@@ -170,61 +286,22 @@ void cd(vector<string>& commands){
     cwd=HOME;
     return;
   }
-  string direc=commands[1];
-
-  if(direc.size()>=2&&direc[0]=='.'&&direc[1]=='.'){
-    if(cwd=="/"){
-      if(direc.size()==2){
-        return ;
-      }
-      direc=direc.substr(2);
-    }
-    else{
-      int j=-1;
-      for(int i=cwd.size()-1;i>=0;i--){
-        if(cwd[i]=='/'){
-          j=i;
-          break;
-        }
-      }
-      if(j==0){
-        direc=direc.substr(2);
-      }
-      else{
-        direc=cwd.substr(0,j)+direc.substr(2);
-      }
-    }
-  }
-  else if(direc[0]=='.'){
-    direc=cwd+direc.substr(1);
-  }
-  else if(direc[0]=='~'){
-    direc=HOME+direc.substr(1);
-  }
-  else if(direc[0]!='/'){
-    direc=cwd+'/'+direc;
-  }
-  fs::path directory=direc;
-  if(fs::exists(directory)){
-    if(fs::is_directory(directory)){
-      cwd=direc;
-      if(cwd.size()>1){
-        if(cwd[cwd.size()-1]=='/'){
-          cwd.pop_back();
-        }
-      }
+  if(commands[1][0]=='~'){
+    if(commands[1]=="~"){
+      cwd=HOME;
       return;
     }
     else{
-      cout<<"cd: "<<direc<<": not a directory"<<endl;
-      return ;
+      if(commands[1][2]=='/'){
+        string str=commands[1].substr(2);
+        cwd=HOME;
+        cd(str);
+        return;
+      }
     }
   }
-  else{
-    cout<<"cd: "<<direc<<": No such file or directory"<<endl;
-    return;
-  }
-
+  cd(commands[1]);
+  return;
 }
 
 int main() {
@@ -254,7 +331,7 @@ int main() {
     main();
   }
   else if(commands[0]=="cd"){
-    cd(commands);
+    cd_main(commands);
     main();
   }
   else{
