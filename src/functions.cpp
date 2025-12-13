@@ -1,10 +1,5 @@
 #include "functions.h"
 
-void init(){
-    cwd="";
-    builtin={"type","exit","echo","pwd"};
-}
-
 bool is_exec(string & path){
   const char * t=path.c_str();
   return access(t, X_OK)==0;
