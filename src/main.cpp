@@ -268,7 +268,7 @@ void cd(const string& direc){
     }
   }
   else{
-    cout<<"cd: "<<new_cwd<<" : No such file or directory"<<endl;
+    cout<<"cd: "<<new_cwd<<": No such file or directory"<<endl;
     return;
   }
 
