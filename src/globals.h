@@ -9,4 +9,5 @@ using namespace std;
 
 namespace fs = std::filesystem;
 string cwd;
-vector<string> exec_folders;
+vector<fs::path> exec_folders;
+vector<string>builtin;
