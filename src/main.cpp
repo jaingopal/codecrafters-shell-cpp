@@ -167,14 +167,15 @@ void cd(vector<string>& commands){
     return;
   }
   string direc=commands[1];
-  if(direc[0]!='/'){
-    direc=cwd+'/'+direc;
-  }
-  else if(direc[0]='.'){
+  
+  if(direc[0]=='.'){
     direc=cwd+'/'+direc.substr(1);
   }
   else if(direc[0]=='~'){
     direc=HOME+'/'+direc.substr(1);
+  }
+  else if(direc[0]!='/'){
+    direc=cwd+'/'+direc;
   }
   fs::path directory=direc;
   if(fs::exists(directory)){
