@@ -95,7 +95,7 @@ vector<string> split_by_spaces(const string& str){
                 }
             }
             else{
-                words.push_back(word);
+                word.push_back(ch);
             }
             continue;
         }
@@ -104,5 +104,9 @@ vector<string> split_by_spaces(const string& str){
     if(word.size()){
         words.push_back(word);
     }
+    // for(auto word:words){
+    //     cout<<word<<" ";
+    // }
+    // cout<<endl;
   return words;
 }
