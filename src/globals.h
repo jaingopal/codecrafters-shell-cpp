@@ -12,9 +12,9 @@ using namespace std;
 
 namespace fs = std::filesystem;
 
-string cwd;
-vector<fs::path> exec_folders;
-vector<string>builtin;
+extern string cwd;
+extern vector<fs::path> exec_folders;
+extern vector<string>builtin;
 
 #endif
 
