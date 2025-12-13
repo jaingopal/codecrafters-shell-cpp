@@ -17,14 +17,20 @@ bool is_exec(string & path){
 }
 
 void run(string& path,const vector<string>& commands){
-
+  pid_t pid = fork();
   vector<char* >argv;
   // argv.push_back(const_cast<char*>(path.c_str()));
   for(const auto & s:commands){
     argv.push_back(const_cast<char*>(s.c_str()));
   }
   argv.push_back(nullptr);
-  execvp(path.c_str(),argv.data());
+  if(pid==0){
+    execvp(path.c_str(),argv.data());
+  }
+  else{
+    wait(nullptr);
+  }
+  return ;
 
 }
 
