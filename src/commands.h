@@ -7,4 +7,4 @@ void cd(const string& direc);
 void cd_main(vector<string>& commands);
 void type(string& command);
 void type_main(vector<string>& commands);
-void echo(vector<string& str>);
+void echo(vector<string>& str);
