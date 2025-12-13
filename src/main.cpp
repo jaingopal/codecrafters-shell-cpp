@@ -3,7 +3,7 @@
 
 
 int main() {
-
+  init();
   cout << unitbuf;
   cerr << unitbuf;
 
