@@ -173,14 +173,14 @@ void parent_dir(){
 }
 
 void cd(const string& direc){
-  
+
   if(!direc.size()){
     return;
   }
 
   if(direc[0]=='/'){
     cwd='/';
-    string direct=direct.substr(1);
+    string direct=direc.substr(1);
     cd(direct);
     return;
   }
