@@ -1,4 +1,7 @@
-#include "functions.h"
+#ifndef CM_H
+    #define CM_H
+    #include "functions.h"
+#endif
 #ifndef GL_H
     #define GLH
     #include "globals.h"

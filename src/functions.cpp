@@ -1,4 +1,7 @@
-#include "functions.h"
+#ifndef FN_H
+  #define FN_H
+  #include "functions.h"
+#endif
 
 bool is_exec(string & path){
   const char * t=path.c_str();

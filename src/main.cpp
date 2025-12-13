@@ -1,7 +1,11 @@
-#include "commands.h"
-#include "functions.h"
-
-
+#ifndef CM_H
+    #define CM_H
+    #include "functions.h"
+#endif
+#ifndef FN_H
+  #define FN_H
+  #include "functions.h"
+#endif
 
 
 
