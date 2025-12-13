@@ -7,10 +7,10 @@ using namespace std;
 
 namespace fs = std::filesystem;
 
-vector<fs::path> exec_files;
+vector<fs::path> exec_folders;
 vector<string>builtin={"type","exit","echo"};
 
-bool if_exec(string & path){
+bool is_exec(string & path){
   const char * t=path.c_str();
   return access(t, X_OK)==0;
 }
@@ -19,12 +19,12 @@ bool if_exec(string & path){
 void get_execFiles(){
   string str=fs::path(getenv("PATH"));
   string temp;
-  exec_files={};
+  exec_folders={};
   for(auto ch:str){
     if(ch==':'){
       if(temp.size()){
-        if(fs::exists(temp)&&if_exec(temp)){
-          exec_files.push_back(temp);
+        if(fs::exists(temp)&&is_exec(temp)&&fs::is_directory(temp)){
+          exec_folders.push_back(temp);
         }
         temp="";
       }
@@ -34,8 +34,8 @@ void get_execFiles(){
     }
   }
   if(temp.size()){
-    if(fs::exists(temp)&&if_exec(temp)){
-      exec_files.push_back(temp);
+    if(fs::exists(temp)&&is_exec(temp)){
+      exec_folders.push_back(temp);
     }
   }
   return ;
@@ -51,6 +51,28 @@ void invalid_type(string& command){
   return;
 }
 
+bool check_type(string& command,string& folder){
+  for(const auto& entry:fs::directory_iterator(folder)){
+    string s=entry.path().string();
+    if(is_exec(s)){
+      if(s.size()<command.size()){
+        continue;
+      }
+      if(s==command){
+        cout<<command<<" is "<<s<<endl;
+        return true;
+      }
+      if(s.substr(s.size()-command.size())==command){
+        if(s[s.size()-command.size()-1]=='/'){
+          cout<<command<<" is "<<s <<endl;
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
 void type(string& str){
   string command=str.substr(5);
   for(auto& s:builtin){
@@ -64,20 +86,11 @@ void type(string& str){
     return;
   }
   get_execFiles();
-  for(auto t:exec_files){
-    string s=t;
-    if(s.size()<command.size()){
-      continue;
-    }
-    if(s==command){
-      cout<<command<<" is "<<s<<endl;
-      return ;
-    }
-    if(s.substr(s.size()-command.size())==command){
-      if(s[s.size()-command.size()-1]=='/'){
-        cout<<command<<" is "<<s <<endl;
-        return;
-      }
+  for(auto t:exec_folders){
+    string folder=t;
+
+    if(check_type(command,folder)){
+      return;
     }
 
   }
