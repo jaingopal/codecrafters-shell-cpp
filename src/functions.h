@@ -1,4 +1,8 @@
-#include "globals.h"
+#ifndef GL_H
+    #define GLH
+    #include "globals.h"
+#endif
+
 
 bool is_exec(string & path);
 void run(string& path,const vector<string>& commands);

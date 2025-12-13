@@ -1,4 +1,9 @@
-#include "globals.h"
+#ifndef GL_H
+    #define GLH
+    #include "globals.h"
+#endif
+
+
 void ext(vector<string>& commands);
 void pwd();
 void parent_dir();
