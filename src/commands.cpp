@@ -1,5 +1,5 @@
-#ifndef CM_H
-    #define CM_H
+#ifndef FN_H
+    #define FN_H
     #include "functions.h"
 #endif
 #ifndef GL_H
