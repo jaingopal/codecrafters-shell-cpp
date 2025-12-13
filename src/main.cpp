@@ -1,6 +1,6 @@
 #include "commands.h"
 #include "functions.h"
-#include "globals.h"
+
 cwd="";
 builtin={"type","exit","echo","pwd"};
 
