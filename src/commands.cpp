@@ -2,8 +2,7 @@
 #include "globals.h"
 
 
-cwd="";
-builtin={"type","exit","echo","pwd"};
+
 
 
 void echo(string& str){
