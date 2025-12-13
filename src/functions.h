@@ -1,16 +1,5 @@
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <vector>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <filesystem>
-using namespace std;
+#include "globals.h"
 
-
-string cwd;
-vector<string> exec_folders
-namespace fs = std::filesystem;
 bool is_exec(string & path);
 void run(string& path,const vector<string>& commands);
 void get_execFiles();
