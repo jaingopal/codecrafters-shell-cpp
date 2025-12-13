@@ -1,8 +1,6 @@
 #include "commands.h"
 #include "functions.h"
 
-cwd="";
-builtin={"type","exit","echo","pwd"};
 
 
 

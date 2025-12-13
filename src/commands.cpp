@@ -1,5 +1,9 @@
 #include "functions.h"
 
+cwd="";
+builtin={"type","exit","echo","pwd"};
+
+
 void echo(string& str){
   cout<<str.substr(5)<<endl;
   return;
