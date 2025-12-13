@@ -4,7 +4,37 @@
 
 
 void echo(string& str){
-  cout<<str.substr(5)<<endl;
+  bool space=false;
+  bool open=false;
+  for(auto ch:str){
+    if(ch==' '){
+        if(open){
+            cout<<ch;
+        }
+        else{
+            space=true;
+        }
+    }
+    else if(ch=='\''){
+        if(open){
+            open=false;
+        }
+        else{
+            if(space){
+                cout<<' ';
+            }
+            space=false;
+            open=true;
+        }
+    }
+    else{
+        if(space){
+            cout<<' ';
+            cout<<ch;
+        }
+        space=false;
+    }
+  }
   return;
 }
 
