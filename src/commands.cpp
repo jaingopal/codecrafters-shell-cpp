@@ -6,8 +6,13 @@
 void echo(string& str){
   bool space=false;
   bool open=false;
+  str=str.substr(5);
+  bool start=true;
   for(auto ch:str){
     if(ch==' '){
+        if(start){
+            continue;
+        }
         if(open){
             cout<<ch;
         }
@@ -16,6 +21,7 @@ void echo(string& str){
         }
     }
     else if(ch=='\''){
+        start=false;
         if(open){
             open=false;
         }
@@ -28,6 +34,7 @@ void echo(string& str){
         }
     }
     else{
+        start=false;
         if(space){
             cout<<' ';
         }
