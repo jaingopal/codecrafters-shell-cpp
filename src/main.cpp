@@ -9,6 +9,8 @@ using namespace std;
 
 namespace fs = std::filesystem;
 
+
+string cwd="";
 vector<fs::path> exec_folders;
 vector<string>builtin={"type","exit","echo","pwd"};
 
@@ -150,10 +152,46 @@ void ext(vector<string>& commands){
 }
 
 void pwd(){
-  fs::path curr=fs::current_path();
-  string str=curr;
-  cout<<str<<endl;
+  if(!cwd.size()){
+    fs::path curr=fs::current_path();
+    cwd=curr;
+  }
+  cout<<cwd<<endl;
   return;
+}
+
+void cd(vector<string>& commands){
+  string HOME=getenv("HOME");
+  if(commands.size()==1){
+    cwd=HOME;
+    return;
+  }
+  string direc=commands[1];
+  if(direc[0]!='/'){
+    direc=cwd+'/'+direc;
+  }
+  else if(direc[0]='.'){
+    direc=cwd+'/'+direc.substr(1);
+  }
+  else if(direc[0]=='~'){
+    direc=HOME+'/'+direc.substr(1);
+  }
+  fs::path directory=direc;
+  if(fs::exists(directory)){
+    if(fs::is_directory(directory)){
+      cwd=direc;
+      return;
+    }
+    else{
+      cout<<"cd: "<<direc<<": not a directory"<<endl;
+      return ;
+    }
+  }
+  else{
+    cout<<"cd: "<<direc<<": No such file or directory"<<endl;
+    return;
+  }
+
 }
 
 int main() {
@@ -180,6 +218,10 @@ int main() {
 
   else if(commands[0]=="pwd"){
     pwd();
+    main();
+  }
+  else if(commands[0]=="cd"){
+    cd(commands);
     main();
   }
   else{
