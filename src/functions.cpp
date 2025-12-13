@@ -69,44 +69,52 @@ string check_type(string& command,string& folder){
 
 
 vector<string> split_by_spaces(const string& str){
-  bool open=false;
-  string word;
-  vector<string> words;
-  for(int i=0;i<str.size();i++){
-    char ch=str[i];
-    if(ch==' '){
-        if(open){
-            word.push_back(ch);
-        }
-        else{
-            if(word.size()){
-                words.push_back(word);
-                word="";
-            }
-        }
-    }
-    if(ch=='\''){
-        if(open){
-            if(i<str.size()-1&&str[i+1]=='\''){
-                continue;
+    bool open=false;
+    string word;
+    vector<string> words;
+    for(int i=0;i<str.size();i++){
+        char ch=str[i];
+        if(ch==' '){
+            if(open){
+                word.push_back(ch);
             }
             else{
-                words.push_back(word);
-                word="";
-                open=false;
+                if(word.size()){
+                    words.push_back(word);
+                    word="";
+                }
+            }
+        }
+        else if(ch=='\''){
+            if(open){
+                if(i<str.size()-1&&str[i+1]!=' '){
+                    if(str[i+1]=='\''){
+                        i++;
+                    }
+                    else{
+                        open=false;
+                    }
+                    continue;
+                }
+                else{
+                    if(word.size()){
+                        words.push_back(word);
+                    }
+                    word="";
+                    open=false;
+                }
+            }
+            else{
+                //it was not open yet 
+                open=true;
             }
         }
         else{
-            if(word.size()){
-                words.push_back(word);
-                word="";
-                open=true;
-            }
+            word.push_back(ch);
         }
     }
     if(word.size()){
         words.push_back(word);
     }
-  }
   return words;
 }
