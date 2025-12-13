@@ -1,8 +1,7 @@
 #include "commands.h"
 #include "functions.h"
-string cwd="";
-vector<fs::path> exec_folders;
-vector<string>builtin={"type","exit","echo","pwd"};
+cwd="";
+builtin={"type","exit","echo","pwd"};
 
 
 
