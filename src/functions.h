@@ -11,3 +11,4 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
 int main();
 void parent_dir();
 void load_history();
+void load_history_file();

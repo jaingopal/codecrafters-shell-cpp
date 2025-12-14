@@ -277,6 +277,7 @@ string check_type(string& command,string& folder){
 void redirect(vector<string>& commands,string& filename,string& errorname,bool append_file,bool append_err){
     if(!filename.size()&&!errorname.size()){
         if(commands[0]=="exit"){
+            load_history_file();
             exit(0);
         }
         else if(commands[0]=="echo"){
@@ -337,6 +338,7 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
         if(error.is_open()){
             error.flush();
         }
+        load_history_file();
         exit(0);
     }
     else if(commands[0]=="echo"){
@@ -622,4 +624,20 @@ void load_history(){
         }
     }
 
+}
+void load_history_file(){
+    const char* env=getenv("HISTFILE");
+    string histfile;
+    if(env==nullptr){
+        histfile=string(getenv("HOME"))+"/.zsh_history";
+    }
+    else{
+        histfile=string(env);
+    }
+    ofstream file (histfile);
+    if(file.is_open()){
+        for(auto his:history){
+            file<<his<<endl;
+        }
+    }
 }
