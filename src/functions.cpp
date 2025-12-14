@@ -91,6 +91,7 @@ void take_input(string& input){
                     for(auto match:matching){
                         cout<<match<<"  ";
                     }
+                    cout<<endl;
                     cout<<"$ "<<input;
                 }
                 else{
