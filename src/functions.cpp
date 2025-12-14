@@ -603,3 +603,23 @@ void split_by_spaces(const string& str,vector<string>& words,string& filename,st
     }
     words=temp;
 }
+void load_history(){
+    const char* env=getenv("HISTFILE");
+    string histfile;
+    if(env==nullptr){
+        histfile=string(getenv("HOME"))+"/.zsh_history";
+    }
+    else{
+        histfile=string(env);
+    }
+    ifstream file (histfile);
+    if(file.is_open()){
+        string his;
+        while(getline(file,his)){
+            if(his.size()){
+                history.push_back(his);
+            }
+        }
+    }
+
+}

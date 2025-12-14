@@ -10,3 +10,4 @@ void split_by_spaces(const string& str,vector<string>& words,string& filename,st
 void redirect(vector<string>& commands,string& filename,string& errorname,bool append_file,bool append_err);
 int main();
 void parent_dir();
+void load_history();

@@ -8,6 +8,7 @@ int main() {
 
   cout<<"$ ";
   string input ;
+  load_history();
   take_input(input);
   vector<string>commands;
   string file="";
