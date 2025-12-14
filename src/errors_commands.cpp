@@ -236,13 +236,44 @@ output type_main_error(vector<string>& commands){
   return ans;
 }
 
-output history_error(int n){
+output history_error(vector<string>& commands){
   output ret;
-  if(n>history.size()){
-    n=history.size();
-  }
-  for(int i=history.size()-n;i<history.size();i++){
-    ret.str=ret.str+"    "+to_string(i+1)+"  "+history[i]+"\n";
-  }
+    if(commands.size()==1){
+      for(int i=0;i<history.size();i++){
+          ret.str=ret.str+"    "+to_string(i+1)+"  "+history[i]+"\n";
+      }
+      return ret;
+    }
+    else{
+      string str=commands[1];
+      if(str=="-r"){
+        if(commands.size()>2){
+          ifstream file(commands[2]);
+          if(file.is_open()){
+            string his;
+            file>>his;
+            history.push_back(his);
+          }
+        }
+        return ret;
+      }
+      int n=0;
+      for(auto ch:str){
+        if(ch>='0'&&ch<='9'){
+          n=n*10+ch-'0';
+        }
+        else{
+          ret.error= "history: "+str+": numeric argument required\n";
+          return ret;
+        }
+      }
+      if(n>history.size()){
+        n=history.size();
+        for(int i=history.size()-n;i<=history.size();i++){
+          ret.str=ret.str+history[i];
+        }
+      }
+
+    }
   return ret;
 }

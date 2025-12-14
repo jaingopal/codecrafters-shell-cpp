@@ -214,13 +214,43 @@ string type_main(vector<string>& commands){
   return ans;
 }
 
-string history_fx(int n){
+string history_fx(vector<string>& commands){
     string ans;
-    if(n>history.size()){
-      n=history.size();
+    if(commands.size()==1){
+      for(int i=0;i<history.size();i++){
+          ans=ans+"    "+to_string(i+1)+"  "+history[i]+"\n";
+      }
+      return ans;
     }
-    for(int i=history.size()-n;i<history.size();i++){
-        ans=ans+"    "+to_string(i+1)+"  "+history[i]+"\n";
+    else{
+      string str=commands[1];
+      if(str=="-r"){
+        if(commands.size()>2){
+          ifstream file(commands[2]);
+          if(file.is_open()){
+            string his;
+            file>>his;
+            history.push_back(his);
+          }
+        }
+        return "";
+      }
+      int n=0;
+      for(auto ch:str){
+        if(ch>='0'&&ch<='9'){
+          n=n*10+ch-'0';
+        }
+        else{
+          return "history: "+str+": numeric argument required\n";
+        }
+      }
+      if(n>history.size()){
+        n=history.size();
+        for(int i=history.size()-n;i<=history.size();i++){
+          ans=ans+history[i];
+        }
+      }
+
     }
     return ans;
 }
