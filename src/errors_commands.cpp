@@ -1,19 +1,18 @@
 #include "functions.h"
-#include "globals.h"
+#include "errors_functions.h"
 
-
-
-string echo(vector<string >& vec){
+output echo_error(vector<string >& vec){
     string ans;
     for(int i=1;i<vec.size();i++){
         ans=ans+vec[i]+" ";
     }
     ans+="\n";
-    return ans;
+    output ret;
+    ret.str=ans;
+    return ret;
 }
 
-
-string ext(vector<string>& commands){
+output ext_error(vector<string>& commands){
   get_execFiles();
   string ans;
   string exec="";
@@ -25,70 +24,75 @@ string ext(vector<string>& commands){
     }
   }
   if(exec.size()){
-    ans=run(exec,commands);
-    return ans;
+    return run_errors(exec,commands);
   }
   else{
     ans=commands[0]+": command not found"+"\n";
-    return ans;
+    output ret;
+    ret.error=ans;
+    return ret;
   }
 }
 
-
-
-string pwd(){
+output pwd_error(){
     string ans;
     if(!cwd.size()){
         fs::path curr=fs::current_path();
         cwd=curr;
     }
     ans=cwd+"\n";
-    return ans;
+    output ret;
+    ret.str=ans;
+    return ret;
 }
 
-
-string cd(const string& direc){
+output cd_error(const string& direc){
     string ans;
     if(!direc.size()){
-        return "";
+        output ret;
+        return ret;
     }
 
     if(direc[0]=='/'){
         cwd='/';
         string direct=direc.substr(1);
-        return cd(direct);
+        return cd_error(direct);
         
     }
 
     if(direc.size()>=2&&direc[0]=='.'&&direc[1]=='.'){
         if(direc.size()==2){
             parent_dir();
-            return "";
+            output ret;
+            return ret;
         }
         if(direc[2]=='/'){
         parent_dir();
         for(int i=3;i<direc.size();i++){
             if(direc[i]!='/'){
                 string direct=direc.substr(i);
-                return cd(direct);
+                return cd_error(direct);
             }
         }
-        return "";
+        output ret;
+        return ret;
         }
     }
 
     if(direc[0]=='.'){
         if(direc.size()==1){
-            return "";
+            output ret;
+            return ret;
         }
         if(direc[1]=='/'){
             for(int i=2;i<direc.size();i++){
                 if(direc[i]!='/'){
                 string direct=direc.substr(i);
-                return cd(direct);
+                return cd_error(direct);
                 }
             }
-            return "";
+            output ret;
+            return ret;
         }
     }
     
@@ -105,18 +109,21 @@ string cd(const string& direc){
         fs::path directory=new_cwd;
         if(!(fs::exists(directory))||!(fs::is_directory(directory))){
             ans="cd: "+new_cwd+'/'+direc.substr(i)+": No such file or directory\n";
-            return ans;
+            output ret;
+            ret.error=ans;
+            return ret;
         }
         cwd=new_cwd;
         temp="";
         while(i<direc.size()){
             if(direc[i]!='/'){
             string direct=direc.substr(i);
-            return cd(direct);
+            return cd_error(direct);
             }
             i++;
         }
-        return "";
+        output ret;
+        return ret;
         }
         else{
             temp.push_back(direc[i]);
@@ -135,21 +142,25 @@ string cd(const string& direc){
     if(fs::exists(directory)){
         if(fs::is_directory(directory)){
             cwd=new_cwd;
-            return "";
+            output ret;
+            return ret;
         } 
         else{
             ans="cd: "+new_cwd+": not a directory\n";
-            return ans;
+            output ret;
+            ret.error=ans;
+            return ret;
         }
     }
     else{
         ans="cd: "+new_cwd+": No such file or directory\n";
-        return ans;
+        output ret;
+        ret.error=ans;
+        return ret;
     }
-
 }
 
-string cd_main(vector<string>& commands){
+output cd_main_error(vector<string>& commands){
   if(cwd==""){
     fs::path curr=fs::current_path();
     cwd=curr;
@@ -158,58 +169,69 @@ string cd_main(vector<string>& commands){
   if(commands.size()==1){
     cwd=HOME;
     chdir(cwd.c_str());
-    return "";
+    output ret;
+    return ret;
   }
   if(commands[1][0]=='~'){
     if(commands[1]=="~"){
         cwd=HOME;
         chdir(cwd.c_str());
-        return "";
+        output ret;
+        return ret;
     }
     else{
       if(commands[1][2]=='/'){
         string str=commands[1].substr(2);
         cwd=HOME;
-        string ans=cd(str);
+        output ans=cd_error(str);
         chdir(cwd.c_str());
         return ans;
       }
     }
   }
-  string ans= cd(commands[1]);
+  output ans= cd_error(commands[1]);
   chdir(cwd.c_str());
   return ans;
 }
 
-string type(string& command){
+output type_error(string& command){
   for(auto& s:builtin){
     if(s==command){
-        return command+" is a shell builtin\n";
+        output ret;
+        ret.str= command+" is a shell builtin\n";
+        return ret;
     }
   }
   if(!command.size()){
-    return "";
+    output ret;
+    return ret;
   }
   get_execFiles();
   for(auto t:exec_folders){
     string folder=t;
     string ret=check_type(command,folder);
     if(ret.size()){
-      return command+" is "+ret+"\n";
+      output retur;
+      retur.str= command+" is "+ret+"\n";
+      return retur;
     }
   }
 
-  return invalid_type(command);
-
+  output ret;
+  ret.error= invalid_type(command);
+  return ret;
 }
 
-string type_main(vector<string>& commands){
+output type_main_error(vector<string>& commands){
   if(commands.size()==1){
-    return "";
+    output ret;
+    return ret;
   }
-  string ans;
+  output ans;
   for(int i=1;i<commands.size();i++){
-    ans=ans+type(commands[i]);
+    output temp=type_error(commands[i]);
+    ans.error=ans.error+temp.error;
+    ans.str=ans.str+temp.str;
   }
   return ans;
 }

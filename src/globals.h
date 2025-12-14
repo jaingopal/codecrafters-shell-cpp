@@ -17,6 +17,11 @@ namespace fs = std::filesystem;
 extern string cwd;
 extern vector<fs::path> exec_folders;
 extern vector<string>builtin;
+class output{
+public:
+    string str;
+    string error;
+};
 
 #endif
 

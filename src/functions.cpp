@@ -1,12 +1,24 @@
 #include "functions.h"
 #include "commands.h"
+#include "error_commands.h"
 
 bool is_exec(string & path){
   const char * t=path.c_str();
   return access(t, X_OK)==0;
 }
 
-//uppdate this run by piping 
+
+void parent_dir(){
+  if(cwd=="/"){
+    return;
+  }
+  for(int i=cwd.size()-1;i>=2;i--){
+    if(cwd[i]=='/'){
+      cwd=cwd.substr(0,i);
+      return;
+    }
+  }
+}
 
 string run(string& path,const vector<string>& commands){
     int pipefd[2];
@@ -85,7 +97,164 @@ string check_type(string& command,string& folder){
 
 
 
-void split_by_spaces(const string& str,vector<string>& words,string& filename){
+
+void redirect(vector<string>& commands,string& filename,string& errorname,bool append_file,bool append_err){
+    if(!filename.size()&&!errorname.size()){
+        if(commands[0]=="exit"){
+            exit(0);
+        }
+        else if(commands[0]=="echo"){
+            cout<<echo(commands);
+            main();
+        }
+        else if(commands[0]=="type"){
+            cout<<type_main(commands);
+            main();
+        }
+
+        else if(commands[0]=="pwd"){
+            cout<<pwd();
+            main();
+        }
+        else if(commands[0]=="cd"){
+            cout<<cd_main(commands);
+            main();
+        }
+        else{
+            cout<<ext(commands);
+            main();
+        }
+    }
+    ofstream file,error;
+    if(filename.size()){
+        if(append_file){
+            file.open(filename,ios::app);
+        }
+        else{
+            file.open(filename,ios::out|ios::trunc);
+        }
+        if(!file.is_open()){
+            cout<<filename<<" not opening "<<endl;
+            main();
+        }
+    }
+    if(errorname.size()){
+        if(append_err){
+            error.open(errorname,ios::app);
+        }
+        else{
+            error.open(errorname,ios::out|ios::trunc);
+        }
+        if(!error.is_open()){
+            cout<<errorname<<" not opening "<<endl;
+            main();
+        }
+    }
+    if(commands[0]=="exit"){
+        if(file){
+            file.flush();
+        }
+        if(error){
+            error.flush();
+        }
+        exit(0);
+    }
+    else if(commands[0]=="echo"){
+        
+        output out=echo_error(commands);
+        if(error){
+            error<<out.error;
+            error.flush();
+        }
+        else{
+            cout<<out.error;
+        }
+        if(file){
+            file<<out.str;
+            file.flush();
+        }
+        else{
+            cout<<out.str;
+        }
+        main();
+    }
+    else if(commands[0]=="type"){
+        output out=type_main_error(commands);
+        if(error){
+            error<<out.error;
+            error.flush();
+        }
+        else{
+            cout<<out.error;
+        }
+        if(file){
+            file<<out.str;
+            file.flush();
+        }
+        else{
+            cout<<out.str;
+        }
+        main();
+    }
+    
+    else if(commands[0]=="pwd"){
+        output out=pwd_error();
+        if(error){
+            error<<out.error;
+            error.flush();
+        }
+        else{
+            cout<<out.error;
+        }
+        if(file){
+            file<<out.str;
+            file.flush();
+        }
+        else{
+            cout<<out.str;
+        }
+        main();
+    }
+    else if(commands[0]=="cd"){
+        output out=cd_main_error(commands);
+        if(error){
+            error<<out.error;
+            error.flush();
+        }
+        else{
+            cout<<out.error;
+        }
+        if(file){
+            file<<out.str;
+            file.flush();
+        }
+        else{
+            cout<<out.str;
+        }
+        main();
+    }
+    else{
+        output out=ext_error(commands);
+        if(error){
+            error<<out.error;
+            error.flush();
+        }
+        else{
+            cout<<out.error;
+        }
+        if(file){
+            file<<out.str;
+            file.flush();
+        }
+        else{
+            cout<<out.str;
+        }
+        main();
+    }
+}
+
+
+void split_by_spaces(const string& str,vector<string>& words,string& filename,string& errorfile,bool& append_file,bool& append_error){
     bool singleq=false;
     bool doubleq=false;
     string word;
@@ -108,8 +277,13 @@ void split_by_spaces(const string& str,vector<string>& words,string& filename){
             continue;
         }
         if(ch=='>'){
+            int val=0;
             if(word.size()){
                 if(word[word.size()-1]=='1'){
+                    word.pop_back();
+                }
+                else if(word[word.size()-1]=='2'){
+                    val=2;
                     word.pop_back();
                 }
             }
@@ -117,7 +291,24 @@ void split_by_spaces(const string& str,vector<string>& words,string& filename){
                 words.push_back(word);
                 word="";
             }
-            words.push_back(">");
+            if(val==2){
+                if(str[i+1]=='>'){
+                    i++;
+                    words.push_back("2>>");
+                }
+                else{
+                    words.push_back("2>");
+                }
+            }
+            else{
+                if(str[i+1]=='>'){
+                    i++;
+                    words.push_back("1>>");
+                }
+                else{
+                    words.push_back("1>");
+                }
+            }
             continue;
         }
         if(!doubleq&&!singleq){
@@ -148,9 +339,64 @@ void split_by_spaces(const string& str,vector<string>& words,string& filename){
     vector<string> temp;
     for(int i=0;i<words.size();i++){
 
-        if(words[i]==">"){
-
+        if(words[i]=="1>"){
+            if(filename.size()){
+                if(append_file){
+                    ofstream file(filename,ios::app);
+                }
+                else{
+                    ofstream file(filename,ios::out|ios::trunc);
+                    file <<"";
+                    file.flush();
+                }
+            }
+            append_file=false;
             filename=words[i+1];
+            i++;
+        }
+        else if(words[i]=="1>>"){
+            if(filename.size()){
+                if(append_file){
+                    ofstream file(filename,ios::app);
+                }
+                else{
+                    ofstream file(filename,ios::out|ios::trunc);
+                    file <<"";
+                    file.flush();
+                }
+            }
+            append_file=true;
+            filename=words[i+1];
+            i++;
+        }
+        else if(words[i]=="2>"){
+            if(errorfile.size()){
+                if(append_error){
+                    ofstream file(errorfile,ios::app);
+                }
+                else{
+                    ofstream file(errorfile,ios::out|ios::trunc);
+                    file <<"";
+                    file.flush();
+                }
+            }
+            append_error=false;
+            errorfile=words[i+1];
+            i++;
+        }
+        else if(words[i]=="2>>"){
+            if(errorfile.size()){
+                if(append_error){
+                    ofstream file(errorfile,ios::app);
+                }
+                else{
+                    ofstream file(errorfile,ios::out|ios::trunc);
+                    file <<"";
+                    file.flush();
+                }
+            }
+            append_error=true;
+            errorfile=words[i+1];
             i++;
         }
         else{
@@ -159,42 +405,4 @@ void split_by_spaces(const string& str,vector<string>& words,string& filename){
         }
     }
     words=temp;
-}
-
-void redirect(vector<string>& commands,string& filename){
-    ofstream file(filename,ios::out|ios::trunc);
-    if(!file.is_open()){
-        cout<<"NOT OPENING "<<endl;
-        return;
-    }
-    if(commands[0]=="exit"){
-        file.flush();
-        exit(0);
-    }
-    else if(commands[0]=="echo"){
-        file<<echo(commands);
-        file.flush();
-        main();
-    }
-    else if(commands[0]=="type"){
-        file<<type_main(commands);
-        file.flush();
-        main();
-    }
-
-    else if(commands[0]=="pwd"){
-        file<<pwd();
-        file.flush();
-        main();
-    }
-    else if(commands[0]=="cd"){
-        file<<cd_main(commands);
-        file.flush();
-        main();
-    }
-    else{
-        file<<ext(commands);
-        file.flush();
-        main();
-    }
 }
