@@ -249,6 +249,17 @@ string history_fx(vector<string>& commands){
         }
         return "";
       }
+      else if(str=="-a"){
+        if(commands.size()>2){
+          ofstream file(commands[2],ios::app);
+          if(file.is_open()){
+            for(auto his:history){
+              file<<his<<endl;
+            }
+          }
+        }
+        return "";
+      }
       int n=0;
       for(auto ch:str){
         if(ch>='0'&&ch<='9'){
