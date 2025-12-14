@@ -1,6 +1,6 @@
 #include "globals.h"
 
-
+void take_input(string& input);
 bool is_exec(string & path);
 string run(string& path,const vector<string>& commands);
 void get_execFiles();

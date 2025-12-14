@@ -1,6 +1,100 @@
 #include "functions.h"
 #include "commands.h"
 #include "error_commands.h"
+#include <termios.h>
+
+char get_ch(){
+    termios oldt,newt;
+    char ch;
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt=oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    read(STDIN_FILENO, &ch, 1);
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    return ch;
+}
+
+pair<int,int> match_char(const char & ch,const int & ind,int start,int end){
+    while(start<=end){
+
+        int mid=start+(end-start)/2;
+        if(builtin[mid].size()<=ind){
+            start=mid+1;
+            continue;
+        }
+        if(builtin[mid][ind]>ch){
+            end=mid-1;
+            continue;
+        }
+        if(builtin[mid][ind]<ch){
+            start=mid+1;
+            continue;
+        }
+        int l=mid;
+        int r=mid;
+        pair<int,int>left=match_char(ch,ind,start,mid-1);
+        pair<int,int>right=match_char(ch,ind,mid+1,end);
+        if(left.first<=left.second){
+            l=left.first;
+        }
+        if(right.second>=right.first){
+            r=right.second;
+        }
+        return {l,r};
+    }
+    return {start,end};
+    
+}
+
+pair<int,int>match_str(const string & str){
+    int start=0,end=builtin.size()-1;
+    for(int i=0;i<str.size();i++){
+        if(start>end){
+            return {start,end};
+        }
+        pair<int,int>temp=match_char(str[i],i,start,end);
+        start=temp.first;
+        end=temp.second;
+    }
+    return {start,end};
+}
+
+void take_input(string& input){
+    char ch;
+    while(1){
+        ch=get_ch();
+        if(ch=='\t'){
+            pair<int,int>match=match_str(input);
+            if(match.first==match.second){
+                for(int i=input.size();i<builtin[match.first].size();i++){
+                    cout<<builtin[match.first][i];
+                }
+                cout<<" ";
+                input=builtin[match.first];
+            }
+            else if(match.first<match.second){
+                cout<<endl;
+                for(int i=match.first;i<=match.second;i++){
+                    cout<<builtin[i]<<endl;
+                }
+                cout<<"$ "<<input;
+            }
+            continue;
+        }
+        cout<<ch;
+        if(ch==' '){
+            if(!input.size()){
+                continue;
+            }
+        }
+        if(ch=='\n'){
+            return ;
+        }
+        input.push_back(ch);
+    }
+    return ;
+}
 
 bool is_exec(string & path){
   const char * t=path.c_str();
