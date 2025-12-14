@@ -67,8 +67,45 @@ bool is_exec(string & path){
 void take_input(string& input){
     char ch;
     int tab=0;
+    history.push_back("");
+    int his_ind=history.size()-1;
     while(1){
         ch=get_ch();
+        if (ch == '\033') {          // ESC
+            char c1 = get_ch();      // '['
+            char c2 = get_ch();      // 'A'
+
+            if (c1 == '[' && c2 == 'A') {
+                his_ind--;
+                if(his_ind<0){
+                    his_ind=0;
+                    cout<<"\x07";   //ring bell 
+                    continue;
+                }
+                else{
+                    cout << "\r\033[2K";    //clear the output written yet 
+                    cout<<"$ "<<history[his_ind];   //written the output 
+                    input=history[his_ind];
+                    continue;
+                }
+            }
+
+            if(c1=='['&&c2=='B'){
+                his_ind++;
+                if(his_ind==history.size()){
+                    his_ind=history.size()-1;
+                    cout<<"\x07";   //ring bell 
+                    continue;
+                }
+                else{
+                    cout << "\r\033[2K";    //clear the output written yet 
+                    cout<<"$ "<<history[his_ind];   //written the output 
+                    input=history[his_ind];
+                    continue;
+                }
+            }
+        }
+
         if(ch=='\t'){
             vector<string>matching;
             match_exec(input,matching);
@@ -84,6 +121,7 @@ void take_input(string& input){
                 cout<<" ";
                 input=matching[0];
                 input.push_back(' ');
+                history[his_ind]=input;
                 continue;
             }
             string st1=matching[0],st2=matching[matching.size()-1];
@@ -104,6 +142,7 @@ void take_input(string& input){
                     cout<<common[i];
                 }
                 input=common;
+                history[his_ind]=input;
                 continue;
             }
             else{
@@ -125,18 +164,20 @@ void take_input(string& input){
         }
         tab=0;
         cout<<ch;
-        if(ch==' '){
-            if(!input.size()){
-                continue;
-            }
-        }
         if(ch=='\n'){
-            if(input.size()){
-                history.push_back(input);
+            if(his_ind!=history.size()-1){
+                history.pop_back();
+                history.push_back(history[his_ind]);
+            }
+            else{
+                if(!history[his_ind].size()){
+                    history.pop_back();
+                }
             }
             return ;
         }
         input.push_back(ch);
+        history[his_ind].push_back(ch);
     }
     return ;
 }
