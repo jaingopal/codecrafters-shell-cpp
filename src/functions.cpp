@@ -256,7 +256,17 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
             return ;
         }
         else if(commands[0]=="history"){
-            cout<<history_fx();
+            int n=0;
+            if(commands.size()==1){
+                n=history.size();
+            }
+            else{
+                string num=commands[1];
+                for(auto ch:num){
+                    n=n*10+ch-'0';
+                }
+            }
+            cout<<history_fx(n);
             return ;
         }
         else{
@@ -373,7 +383,17 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
         return ;
     }
     else if(commands[0]=="history"){
-        output out = history_error();
+        int n=0;
+        if(commands.size()==1){
+            n=history.size();
+        }
+        else{
+            string num=commands[1];
+            for(auto ch:num){
+                n=n*10+ch-'0';
+            }
+        }
+        output out = history_error(n);
         if(error.is_open()){
             error<<out.error;
             error.flush();

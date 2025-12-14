@@ -214,9 +214,12 @@ string type_main(vector<string>& commands){
   return ans;
 }
 
-string history_fx(){
+string history_fx(int n){
     string ans;
-    for(int i=0;i<history.size();i++){
+    if(n>history.size()){
+      n=history.size();
+    }
+    for(int i=history.size()-n;i<history.size();i++){
         ans=ans+"    "+to_string(i+1)+"  "+history[i]+"\n";
     }
     return ans;

@@ -6,4 +6,4 @@ output cd_error(const string& direc);
 output cd_main_error(vector<string>& commands);
 output type_error(string& command);
 output type_main_error(vector<string>& commands);
-output history_error();
+output history_error(int n);
