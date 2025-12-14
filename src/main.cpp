@@ -1,5 +1,6 @@
-#include "functions.h"
-#include "commands.h"
+#include "../header/functions.h"
+#include "../header/commands.h"
+#include "../header/input.h"
 
 int main() {
 

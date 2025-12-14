@@ -1,5 +1,5 @@
-#include "functions.h"
-#include "errors_functions.h"
+#include "../header/functions.h"
+#include "../header/errors_functions.h"
 
 output echo_error(vector<string >& vec){
     string ans;

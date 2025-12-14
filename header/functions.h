@@ -1,6 +1,5 @@
 #include "globals.h"
 
-void take_input(string& input);
 bool is_exec(string & path);
 string run(string& path,const vector<string>& commands,string& message);
 void get_execFiles();
@@ -14,3 +13,5 @@ void load_history();
 void load_history_file();
 void split_with_pipe(vector<string>& words,vector<vector<string>>& par);
 string execute(vector<vector<string>>& partitions);
+char get_ch();
+void match_exec(const string& str,vector<string>& matching);

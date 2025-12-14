@@ -1,5 +1,5 @@
-#include "functions.h"
-#include "globals.h"
+#include "../header/functions.h"
+#include "../header/globals.h"
 
 
 

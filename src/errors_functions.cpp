@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "../header/globals.h"
 
 output run_errors(string& path,const vector<string>& commands){
     int out_pipe[2];   // for stdout
