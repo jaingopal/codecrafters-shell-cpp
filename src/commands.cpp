@@ -13,7 +13,7 @@ string echo(vector<string >& vec){
 }
 
 
-string ext(vector<string>& commands){
+string ext(vector<string>& commands,string& input){
   get_execFiles();
   string ans;
   string exec="";
@@ -25,7 +25,7 @@ string ext(vector<string>& commands){
     }
   }
   if(exec.size()){
-    ans=run(exec,commands);
+    ans=run(exec,commands,input);
     return ans;
   }
   else{

@@ -1,6 +1,6 @@
 #include "globals.h"
 
-string ext(vector<string>& commands);
+string ext(vector<string>& commands,string& input);
 string pwd();
 string cd(const string& direc);
 string cd_main(vector<string>& commands);

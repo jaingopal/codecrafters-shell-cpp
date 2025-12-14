@@ -196,37 +196,61 @@ void parent_dir(){
   }
 }
 
-string run(string& path,const vector<string>& commands){
-    int pipefd[2];
-    pipe(pipefd);
+string run(string& path,
+           const vector<string>& commands,
+           string& input)
+{
+    //0->read end   1->write end 
+    int inpipe[2];   // parent -> child
+    int outpipe[2];  // child -> parent
+
+    pipe(inpipe);
+    pipe(outpipe);
+
     pid_t pid = fork();
-    if(pid==0){
-        dup2(pipefd[1], STDOUT_FILENO);
-        close(pipefd[0]);
-        close(pipefd[1]);
-        vector<char* >argv;
-        for(const auto & s:commands){
-          argv.push_back(const_cast<char*>(s.c_str()));
-        }
+
+    if (pid == 0) {
+        // CHILD
+
+        dup2(inpipe[0], STDIN_FILENO);      //reads from child read end
+        dup2(outpipe[1], STDOUT_FILENO);    //writes to child write end 
+
+        close(inpipe[1]);
+        close(outpipe[0]);
+        close(inpipe[0]);
+        close(outpipe[1]);
+
+        vector<char*> argv;
+        for (const auto& s : commands)
+            argv.push_back(const_cast<char*>(s.c_str()));
         argv.push_back(nullptr);
-        execvp(path.c_str(),argv.data());
+
+        execvp(path.c_str(), argv.data());
+        _exit(1);
     }
-    
-    close(pipefd[1]);
+
+    // PARENT
+    close(inpipe[0]);   
+    close(outpipe[1]);
+
+    if (!input.empty()) {
+        write(inpipe[1], input.c_str(), input.size());
+    }
+    close(inpipe[1]);
 
     string output;
     char buf[256];
     ssize_t n;
-
-    while ((n = read(pipefd[0], buf, sizeof(buf))) > 0) {
+    while ((n = read(outpipe[0], buf, sizeof(buf))) > 0) {
         output.append(buf, n);
     }
 
-    close(pipefd[0]);
-    wait(nullptr);
-    return output;
+    close(outpipe[0]);
+    waitpid(pid, nullptr, 0);
 
+    return output;
 }
+
 
 //For regenerating the executable files from the PATH variable
 void get_execFiles(){
@@ -274,36 +298,31 @@ string check_type(string& command,string& folder){
 
 
 
-void redirect(vector<string>& commands,string& filename,string& errorname,bool append_file,bool append_err){
+string redirect(vector<string>& commands,string& filename,string& errorname,bool append_file,bool append_err){
     if(!filename.size()&&!errorname.size()){
         if(commands[0]=="exit"){
             load_history_file();
             exit(0);
         }
         else if(commands[0]=="echo"){
-            cout<<echo(commands);
-            return ;
+            return echo(commands);
         }
         else if(commands[0]=="type"){
-            cout<<type_main(commands);
-            return ;
+            return type_main(commands);
         }
 
         else if(commands[0]=="pwd"){
-            cout<<pwd();
-            return ;
+            return pwd();
         }
         else if(commands[0]=="cd"){
-            cout<<cd_main(commands);
-            return ;
+            return cd_main(commands);
         }
         else if(commands[0]=="history"){
-            cout<<history_fx(commands);
-            return ;
+            return history_fx(commands);
         }
         else{
-            cout<<ext(commands);
-            return ;
+            string in="";
+            return ext(commands,in);
         }
     }
     ofstream file,error;
@@ -315,8 +334,7 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
             file.open(filename,ios::out|ios::trunc);
         }
         if(!file.is_open()){
-            cout<<filename<<" not opening "<<endl;
-            return ;
+            return filename+" not opening \n";
         }
     }
     if(errorname.size()){
@@ -327,8 +345,7 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
             error.open(errorname,ios::out|ios::trunc);
         }
         if(!error.is_open()){
-            cout<<errorname<<" not opening "<<endl;
-            return ;
+            return errorname+" not opening \n";
         }
     }
     if(commands[0]=="exit"){
@@ -342,115 +359,121 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
         exit(0);
     }
     else if(commands[0]=="echo"){
-        
+        string ans;
         output out=echo_error(commands);
         if(error.is_open()){
             error<<out.error;
             error.flush();
         }
         else{
-            cout<<out.error;
+            ans=out.error;
         }
         if(file.is_open()){
             file<<out.str;
             file.flush();
         }
         else{
-            cout<<out.str;
+            ans=ans+out.str;
         }
-        return ;
+        return ans;
     }
     else if(commands[0]=="type"){
+        string ans;
         output out=type_main_error(commands);
         if(error.is_open()){
             error<<out.error;
             error.flush();
         }
         else{
-            cout<<out.error;
+            ans=out.error;
         }
         if(file.is_open()){
             file<<out.str;
             file.flush();
         }
         else{
-            cout<<out.str;
+            ans=ans+out.str;
         }
-        return ;
+        return ans;
     }
     
     else if(commands[0]=="pwd"){
+        string ans;
         output out=pwd_error();
         if(error.is_open()){
             error<<out.error;
             error.flush();
         }
         else{
-            cout<<out.error;
+            ans=out.error;
         }
         if(file.is_open()){
             file<<out.str;
             file.flush();
         }
         else{
-            cout<<out.str;
+            ans=ans+out.str;
         }
-        return ;
+        return ans ;
     }
     else if(commands[0]=="cd"){
+        string ans;
         output out=cd_main_error(commands);
         if(error.is_open()){
             error<<out.error;
             error.flush();
         }
         else{
-            cout<<out.error;
+            ans=out.error;
         }
         if(file.is_open()){
             file<<out.str;
             file.flush();
         }
         else{
-            cout<<out.str;
+            ans=ans+out.str;
         }
-        return ;
+        return ans;
     }
     else if(commands[0]=="history"){
+        string ans;
         output out = history_error(commands);
         if(error.is_open()){
             error<<out.error;
             error.flush();
         }
         else{
-            cout<<out.error;
+            ans=out.error;
         }
         if(file.is_open()){
             file<<out.str;
             file.flush();
         }
         else{
-            cout<<out.str;
+            ans=ans+out.str;
         }
-        return ;
+        return ans;
     }
     else{
         output out=ext_error(commands);
+        string ans;
         if(error.is_open()){
             error<<out.error;
             error.flush();
         }
         else{
-            cout<<out.error;
+            ans=out.error;
         }
         if(file.is_open()){
             file<<out.str;
             file.flush();
         }
         else{
-            cout<<out.str;
+            ans=ans+out.str;
         }
-        return ;
+        return ans;
     }
+    return "";
 }
 
 void split_by_spaces(const string& str,vector<string>& words,string& filename,string& errorfile,bool& append_file,bool& append_error){
@@ -468,6 +491,14 @@ void split_by_spaces(const string& str,vector<string>& words,string& filename,st
                 }
             }
             word.push_back(ch);
+            continue;
+        }
+        if(ch=='|'){
+            if(word.size()){
+                words.push_back(word);
+                word="";
+            }
+            words.push_back("|");
             continue;
         }
         if(ch=='\\'){
@@ -640,4 +671,34 @@ void load_history_file(){
             file<<his<<endl;
         }
     }
+}
+
+void split_with_pipe(vector<string>& words,vector<vector<string>>& par){
+    vector<string>vec;
+    for(auto str:words){
+        if(str=="|"){
+            if(vec.size()){
+                par.push_back(vec);
+                vec={};
+            }
+        }
+        else{
+            vec.push_back(str);
+        }
+    }
+    if(vec.size()){
+        par.push_back(vec);
+    }
+    return;
+}
+
+string execute(vector<vector<string>>& partitions){
+    string file="",err="";
+    bool file_=0,err_=0;
+    string ans=redirect(partitions[0],file,err,file_,err_);
+    for(int i=1;i<partitions.size();i++){
+
+        ans=ext(partitions[i],ans);
+    }
+    return ans;
 }

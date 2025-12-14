@@ -18,6 +18,11 @@ int main() {
   bool append_file=0,append_err=0;
 
   split_by_spaces(input,commands,file,errorfile,append_file,append_err);
-  redirect(commands,file,errorfile,append_file,append_err);
+  vector<vector<string>> partitions;
+  split_with_pipe(commands,partitions);
+  if(partitions.size()==1){
+    cout<<redirect(partitions[0],file,errorfile,append_file,append_err);
+  }
+  cout<<execute(partitions);
   goto looping;
 }
