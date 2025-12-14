@@ -235,3 +235,11 @@ output type_main_error(vector<string>& commands){
   }
   return ans;
 }
+
+output history_error(){
+  output ret;
+  for(int i=0;i<history.size();i++){
+    ret.str=ret.str+"    "+to_string(i+1)+"  "+history[i]+"\n";
+  }
+  return ret;
+}

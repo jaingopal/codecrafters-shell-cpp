@@ -16,4 +16,5 @@ int main() {
 
   split_by_spaces(input,commands,file,errorfile,append_file,append_err);
   redirect(commands,file,errorfile,append_file,append_err);
+  main();
 }

@@ -213,3 +213,11 @@ string type_main(vector<string>& commands){
   }
   return ans;
 }
+
+string history_fx(){
+    string ans;
+    for(int i=0;i<history.size();i++){
+        ans=ans+"    "+to_string(i+1)+"  "+history[i]+"\n";
+    }
+    return ans;
+}

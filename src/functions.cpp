@@ -131,6 +131,9 @@ void take_input(string& input){
             }
         }
         if(ch=='\n'){
+            if(input.size()){
+                history.push_back(input);
+            }
             return ;
         }
         input.push_back(ch);
@@ -237,24 +240,28 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
         }
         else if(commands[0]=="echo"){
             cout<<echo(commands);
-            main();
+            return ;
         }
         else if(commands[0]=="type"){
             cout<<type_main(commands);
-            main();
+            return ;
         }
 
         else if(commands[0]=="pwd"){
             cout<<pwd();
-            main();
+            return ;
         }
         else if(commands[0]=="cd"){
             cout<<cd_main(commands);
-            main();
+            return ;
+        }
+        else if(commands[0]=="history"){
+            cout<<history_fx();
+            return ;
         }
         else{
             cout<<ext(commands);
-            main();
+            return ;
         }
     }
     ofstream file,error;
@@ -267,7 +274,7 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
         }
         if(!file.is_open()){
             cout<<filename<<" not opening "<<endl;
-            main();
+            return ;
         }
     }
     if(errorname.size()){
@@ -279,7 +286,7 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
         }
         if(!error.is_open()){
             cout<<errorname<<" not opening "<<endl;
-            main();
+            return ;
         }
     }
     if(commands[0]=="exit"){
@@ -308,7 +315,7 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
         else{
             cout<<out.str;
         }
-        main();
+        return ;
     }
     else if(commands[0]=="type"){
         output out=type_main_error(commands);
@@ -326,7 +333,7 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
         else{
             cout<<out.str;
         }
-        main();
+        return ;
     }
     
     else if(commands[0]=="pwd"){
@@ -345,7 +352,7 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
         else{
             cout<<out.str;
         }
-        main();
+        return ;
     }
     else if(commands[0]=="cd"){
         output out=cd_main_error(commands);
@@ -363,7 +370,25 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
         else{
             cout<<out.str;
         }
-        main();
+        return ;
+    }
+    else if(commands[0]=="history"){
+        output out = history_error();
+        if(error.is_open()){
+            error<<out.error;
+            error.flush();
+        }
+        else{
+            cout<<out.error;
+        }
+        if(file.is_open()){
+            file<<out.str;
+            file.flush();
+        }
+        else{
+            cout<<out.str;
+        }
+        return ;
     }
     else{
         output out=ext_error(commands);
@@ -381,10 +406,9 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
         else{
             cout<<out.str;
         }
-        main();
+        return ;
     }
 }
-
 
 void split_by_spaces(const string& str,vector<string>& words,string& filename,string& errorfile,bool& append_file,bool& append_error){
     bool singleq=false;
