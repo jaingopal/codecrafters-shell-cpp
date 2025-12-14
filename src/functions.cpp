@@ -66,11 +66,13 @@ bool is_exec(string & path){
 
 void take_input(string& input){
     char ch;
+    int tab=0;
     while(1){
         ch=get_ch();
         if(ch=='\t'){
             vector<string>matching;
             match_exec(input,matching);
+            sort(matching.begin(),matching.end());
             if(!matching.size()){
                 cout<<"\x07";
                 continue;
@@ -84,14 +86,21 @@ void take_input(string& input){
                 input.push_back(' ');
             }
             else{
-                cout<<endl;
-                for(auto match:matching){
-                    cout<<match<<endl;
+                if(tab){
+                    cout<<endl;
+                    for(auto match:matching){
+                        cout<<match<<"  ";
+                    }
+                    cout<<"$ "<<input;
                 }
-                cout<<"$ "<<input;
+                else{
+                    tab++;
+                    cout<<"\x07";
+                }
             }
             continue;
         }
+        tab=0;
         cout<<ch;
         if(ch==' '){
             if(!input.size()){
