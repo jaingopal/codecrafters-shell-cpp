@@ -85,22 +85,28 @@ void take_input(string& input){
                 input=matching[0];
                 input.push_back(' ');
             }
+            string st1=matching[0],st2=matching[matching.size()-1];
+            int i=0,j=0;
+            string common;
+            while(i<st1.size()&&j<st2.size()){
+                if(st1[i]==st2[j]){
+                    common.push_back(st1[i]);
+                }   
+                else{
+                    break;
+                }
+                i++;
+                j++;
+            }
+            if(input!=common){
+                for(i=input.size();i<common.size();i++){
+                    cout<<common[i];
+                }
+                input=common;
+                continue;
+            }
             else{
                 if(tab){
-                    string st1=matching[0],st2=matching[matching.size()-1];
-                    int i=0,j=0;
-                    string common;
-                    while(i<st1.size()&&j<st2.size()){
-                        if(st1[i]==st2[j]){
-                            common.push_back(st1[i]);
-                        }   
-                        else{
-                            break;
-                        }
-                        i++;
-                        j++;
-                    }
-                    input=common;
                     cout<<endl;
                     for(auto match:matching){
                         cout<<match<<"  ";
