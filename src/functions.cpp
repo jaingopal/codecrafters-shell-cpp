@@ -15,49 +15,53 @@ char get_ch(){
     return ch;
 }
 
-pair<int,int> match_char(const char & ch,const int & ind,int start,int end){
-    while(start<=end){
 
-        int mid=start+(end-start)/2;
-        if(builtin[mid].size()<=ind){
-            start=mid+1;
-            continue;
-        }
-        if(builtin[mid][ind]>ch){
-            end=mid-1;
-            continue;
-        }
-        if(builtin[mid][ind]<ch){
-            start=mid+1;
-            continue;
-        }
-        int l=mid;
-        int r=mid;
-        pair<int,int>left=match_char(ch,ind,start,mid-1);
-        pair<int,int>right=match_char(ch,ind,mid+1,end);
-        if(left.first<=left.second){
-            l=left.first;
-        }
-        if(right.second>=right.first){
-            r=right.second;
-        }
-        return {l,r};
-    }
-    return {start,end};
+void match_exec(const string& str,vector<string>& matching){
     
+    for(auto fn:builtin){
+        if(fn.size()<str.size()){
+            continue;
+        }
+        else{
+            if(fn.substr(0,str.size())==str){
+                matching.push_back(fn);
+            }
+        }
+    }
+
+    get_execFiles();
+    for(auto folder: exec_folders){
+        for(const auto& entry:fs::directory_iterator(folder)){
+
+            string entry_path=entry.path().string();
+            string entry_name=entry.path().filename().string();
+            if(!is_exec(entry_path)){
+                continue;
+            }
+            if(entry_name.size()<str.size()){
+                continue;
+            }
+            if(entry_name.substr(0,str.size())==str){
+                bool check=true;
+                for(auto builtin_fn:builtin){
+                    if(builtin_fn==entry_name){
+                        check=false;
+                    }
+                }
+                if(check){
+                    matching.push_back(entry_name);
+                }
+            }
+        }
+    }
+
+    return ;
+
 }
 
-pair<int,int>match_str(const string & str){
-    int start=0,end=builtin.size()-1;
-    for(int i=0;i<str.size();i++){
-        if(start>end){
-            return {start,end};
-        }
-        pair<int,int>temp=match_char(str[i],i,start,end);
-        start=temp.first;
-        end=temp.second;
-    }
-    return {start,end};
+bool is_exec(string & path){
+  const char * t=path.c_str();
+  return access(t, X_OK)==0;
 }
 
 void take_input(string& input){
@@ -65,24 +69,26 @@ void take_input(string& input){
     while(1){
         ch=get_ch();
         if(ch=='\t'){
-            pair<int,int>match=match_str(input);
-            if(match.first==match.second){
-                for(int i=input.size();i<builtin[match.first].size();i++){
-                    cout<<builtin[match.first][i];
+            vector<string>matching;
+            match_exec(input,matching);
+            if(!matching.size()){
+                cout<<"\x07";
+                continue;
+            }
+            if(matching.size()==1){
+                for(int i=input.size();i<matching[0].size();i++){
+                    cout<<matching[0][i];
                 }
                 cout<<" ";
-                input=builtin[match.first];
+                input=matching[0];
                 input.push_back(' ');
             }
-            else if(match.first<match.second){
+            else{
                 cout<<endl;
-                for(int i=match.first;i<=match.second;i++){
-                    cout<<builtin[i]<<endl;
+                for(auto match:matching){
+                    cout<<match<<endl;
                 }
                 cout<<"$ "<<input;
-            }
-            else{
-                cout<<"\x07";
             }
             continue;
         }
@@ -100,10 +106,6 @@ void take_input(string& input){
     return ;
 }
 
-bool is_exec(string & path){
-  const char * t=path.c_str();
-  return access(t, X_OK)==0;
-}
 
 
 void parent_dir(){
@@ -169,7 +171,7 @@ void get_execFiles(){
     }
   }
   if(temp.size()){
-    if(fs::exists(temp)&&is_exec(temp)){
+    if(fs::exists(temp)&&is_exec(temp)&&fs::is_directory(temp)){
       exec_folders.push_back(temp);
     }
   }
