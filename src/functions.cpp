@@ -72,6 +72,7 @@ void take_input(string& input){
                 }
                 cout<<" ";
                 input=builtin[match.first];
+                input.push_back(' ');
             }
             else if(match.first<match.second){
                 cout<<endl;
