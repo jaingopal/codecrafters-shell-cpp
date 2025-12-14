@@ -18,6 +18,7 @@ namespace fs = std::filesystem;
 extern string cwd;
 extern vector<fs::path> exec_folders;
 extern vector<string>builtin;
+extern int hist_append_ind;
 extern vector<string>history;
 class output{
 public:

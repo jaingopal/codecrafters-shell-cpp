@@ -253,8 +253,9 @@ string history_fx(vector<string>& commands){
         if(commands.size()>2){
           ofstream file(commands[2],ios::app);
           if(file.is_open()){
-            for(auto his:history){
-              file<<his<<endl;
+            while(hist_append_ind<history.size()){
+              file<<history[hist_append_ind]<<endl;
+              hist_append_ind++;
             }
           }
         }
