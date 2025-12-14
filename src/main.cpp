@@ -3,12 +3,14 @@
 
 int main() {
 
+
+  load_history();
+  looping:
   cout << unitbuf;
   cerr << unitbuf;
 
   cout<<"$ ";
   string input ;
-  load_history();
   take_input(input);
   vector<string>commands;
   string file="";
@@ -17,5 +19,5 @@ int main() {
 
   split_by_spaces(input,commands,file,errorfile,append_file,append_err);
   redirect(commands,file,errorfile,append_file,append_err);
-  main();
+  goto looping;
 }
