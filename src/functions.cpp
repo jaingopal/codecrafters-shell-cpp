@@ -84,6 +84,7 @@ void take_input(string& input){
                 cout<<" ";
                 input=matching[0];
                 input.push_back(' ');
+                continue;
             }
             string st1=matching[0],st2=matching[matching.size()-1];
             int i=0,j=0;
