@@ -23,6 +23,8 @@ int main() {
   if(partitions.size()==1){
     cout<<redirect(partitions[0],file,errorfile,append_file,append_err);
   }
-  cout<<execute(partitions);
+  else{
+    cout<<execute(partitions);
+  }
   goto looping;
 }

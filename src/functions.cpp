@@ -299,30 +299,72 @@ string check_type(string& command,string& folder){
 
 
 string redirect(vector<string>& commands,string& filename,string& errorname,bool append_file,bool append_err){
-    if(!filename.size()&&!errorname.size()){
+    if(!errorname.size()){
+        ofstream file;
+        if(filename.size()){
+            if(append_file){
+                file.open(filename,ios::app);
+            }
+            else{
+                file.open(filename,ios::out|ios::trunc);
+            }
+            if(!file.is_open()){
+                return filename+" not opening \n";
+            }
+        }
         if(commands[0]=="exit"){
             load_history_file();
             exit(0);
         }
         else if(commands[0]=="echo"){
-            return echo(commands);
+            string ans= echo(commands);
+            if(filename.size()){
+                file<<ans<<flush;
+                return "";
+            }
+            return ans;
         }
         else if(commands[0]=="type"){
-            return type_main(commands);
+            string ans= type_main(commands);
+            if(filename.size()){
+                file<<ans<<flush;
+                return "";
+            }
+            return ans;
         }
 
         else if(commands[0]=="pwd"){
-            return pwd();
+            string ans= pwd();
+            if(filename.size()){
+                file<<ans<<flush;
+                return "";
+            }
+            return ans;
         }
         else if(commands[0]=="cd"){
-            return cd_main(commands);
+            string ans= cd_main(commands);
+            if(filename.size()){
+                file<<ans<<flush;
+                return "";
+            }
+            return ans;
         }
         else if(commands[0]=="history"){
-            return history_fx(commands);
+            string ans= history_fx(commands);
+            if(filename.size()){
+                file<<ans<<flush;
+                return "";
+            }
+            return ans;
         }
         else{
             string in="";
-            return ext(commands,in);
+            string ans= ext(commands,in);
+            if(filename.size()){
+                file<<ans<<flush;
+                return "";
+            }
+            return ans;
         }
     }
     ofstream file,error;
