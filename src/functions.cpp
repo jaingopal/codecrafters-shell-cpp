@@ -71,18 +71,29 @@ void take_input(string& input){
     int his_ind=history.size()-1;
     while(1){
         ch=get_ch();
-        if (ch == '\033') {          // ESC
-            char c1 = get_ch();      // '['
-            char c2 = get_ch();      // 'A'
+        if(ch == '\b' || ch == 127){        //backspace
+            if(!input.size()){
+                cout<<"\x07";   //ring bell 
+            }
+            else{
+                cout<<"\b \b"<<flush;
+                input.pop_back();
+                history[his_ind]=input;
+            }
+            continue;
+        }
+        if (ch == '\033') {          
+            char c1 = get_ch();      
+            char c2 = get_ch();      
 
-            if (c1 == '[' && c2 == 'A') {
+            if (c1 == '[' && c2 == 'A') {   //upward arrow
                 his_ind--;
                 if(his_ind<0){
                     his_ind=0;
                     cout<<"\x07";   //ring bell 
                     continue;
                 }
-                else{
+                else{   
                     cout << "\r\033[2K";    //clear the output written yet 
                     cout<<"$ "<<history[his_ind];   //written the output 
                     input=history[his_ind];
@@ -90,7 +101,7 @@ void take_input(string& input){
                 }
             }
 
-            if(c1=='['&&c2=='B'){
+            if(c1=='['&&c2=='B'){       //downward arrow 
                 his_ind++;
                 if(his_ind==history.size()){
                     his_ind=history.size()-1;
