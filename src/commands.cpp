@@ -229,9 +229,10 @@ string history_fx(vector<string>& commands){
           ifstream file(commands[2]);
           if(file.is_open()){
             string his;
-            file>>his;
-            if(his.size()){
-              history.push_back(his);
+            while(getline(file,his)){
+              if(his.size()){
+                history.push_back(his);
+              }
             }
           }
         }
