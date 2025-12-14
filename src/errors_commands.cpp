@@ -271,8 +271,8 @@ output history_error(vector<string>& commands){
       }
       if(n>history.size()){
         n=history.size();
-        for(int i=history.size()-n;i<=history.size();i++){
-          ret.str=ret.str+history[i];
+        for(int i=history.size()-n;i<history.size();i++){
+          ret.str=ret.str+"    "+to_string(i+1)+"  "+history[i]+"\n";
         }
       }
 

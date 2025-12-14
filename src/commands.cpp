@@ -249,9 +249,9 @@ string history_fx(vector<string>& commands){
       }
       if(n>history.size()){
         n=history.size();
-        for(int i=history.size()-n;i<=history.size();i++){
-          ans=ans+history[i];
-        }
+      }
+      for(int i=history.size()-n;i<history.size();i++){
+        ans=ans+"    "+to_string(i+1)+"  "+history[i]+"\n";
       }
 
     }
