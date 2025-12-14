@@ -151,10 +151,10 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
         }
     }
     if(commands[0]=="exit"){
-        if(file){
+        if(file.is_open()){
             file.flush();
         }
-        if(error){
+        if(error.is_open()){
             error.flush();
         }
         exit(0);
@@ -162,14 +162,14 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
     else if(commands[0]=="echo"){
         
         output out=echo_error(commands);
-        if(error){
+        if(error.is_open()){
             error<<out.error;
             error.flush();
         }
         else{
             cout<<out.error;
         }
-        if(file){
+        if(file.is_open()){
             file<<out.str;
             file.flush();
         }
@@ -180,14 +180,14 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
     }
     else if(commands[0]=="type"){
         output out=type_main_error(commands);
-        if(error){
+        if(error.is_open()){
             error<<out.error;
             error.flush();
         }
         else{
             cout<<out.error;
         }
-        if(file){
+        if(file.is_open()){
             file<<out.str;
             file.flush();
         }
@@ -199,14 +199,14 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
     
     else if(commands[0]=="pwd"){
         output out=pwd_error();
-        if(error){
+        if(error.is_open()){
             error<<out.error;
             error.flush();
         }
         else{
             cout<<out.error;
         }
-        if(file){
+        if(file.is_open()){
             file<<out.str;
             file.flush();
         }
@@ -217,14 +217,14 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
     }
     else if(commands[0]=="cd"){
         output out=cd_main_error(commands);
-        if(error){
+        if(error.is_open()){
             error<<out.error;
             error.flush();
         }
         else{
             cout<<out.error;
         }
-        if(file){
+        if(file.is_open()){
             file<<out.str;
             file.flush();
         }
@@ -235,14 +235,14 @@ void redirect(vector<string>& commands,string& filename,string& errorname,bool a
     }
     else{
         output out=ext_error(commands);
-        if(error){
+        if(error.is_open()){
             error<<out.error;
             error.flush();
         }
         else{
             cout<<out.error;
         }
-        if(file){
+        if(file.is_open()){
             file<<out.str;
             file.flush();
         }
