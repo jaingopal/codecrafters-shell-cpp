@@ -81,6 +81,9 @@ void take_input(string& input){
                 }
                 cout<<"$ "<<input;
             }
+            else{
+                cout<<"\x07";
+            }
             continue;
         }
         cout<<ch;
