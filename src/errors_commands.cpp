@@ -252,7 +252,9 @@ output history_error(vector<string>& commands){
           if(file.is_open()){
             string his;
             file>>his;
-            history.push_back(his);
+            if(his.size()){
+              history.push_back(his);
+            }
           }
         }
         return ret;
